@@ -373,12 +373,19 @@ add_filter('query_vars', 'niesv_add_gallery_query_vars');
 /**
  * Add ACF Options Page
  */
-if (function_exists('acf_add_options_page')) {
+function niesv_register_options_pages() {
+    if (!function_exists('acf_add_options_page')) {
+        return;
+    }
+
     acf_add_options_page(array(
         'page_title' => 'Theme General Settings',
         'menu_title' => 'Theme Options',
         'menu_slug' => 'general-settings',
         'capability' => 'edit_posts',
+        // Field groups are attached to this page, so it must be a real page
+        // rather than ACF's default redirect to the first sub page.
+        'redirect' => false,
         'icon_url' => 'dashicons-admin-customizer',
     ));
 
@@ -400,6 +407,7 @@ if (function_exists('acf_add_options_page')) {
         'parent_slug' => 'general-settings',
     ));
 }
+add_action('acf/init', 'niesv_register_options_pages');
 
 /**
  * Custom Image Sizes
@@ -4738,7 +4746,7 @@ function niesv_create_auth_pages() {
         }
     }
 }
-add_action('after_setup_theme', 'niesv_create_auth_pages');
+add_action('after_switch_theme', 'niesv_create_auth_pages');
 
 // Remove the capabilities an older version granted to subscribers. Property access
 // is enforced by niesv_user_has_property_access() in the front-end handlers, and
@@ -5434,7 +5442,7 @@ function niesv_create_member_pages() {
         }
     }
 }
-add_action('after_setup_theme', 'niesv_create_member_pages');
+add_action('after_switch_theme', 'niesv_create_member_pages');
 
 /**
  * Create default menus on theme activation
@@ -6095,50 +6103,39 @@ function niesv_pwa_support() {
 add_action('after_setup_theme', 'niesv_pwa_support');
 
 /**
- * Generate proper robots.txt content - OVERRIDE WordPress privacy settings for social media
+ * robots.txt
+ *
+ * Honours Settings > Reading > "Discourage search engines": when it is ticked the
+ * whole site is disallowed for search engines (staging copies stay out of Google),
+ * but link-preview crawlers can still fetch pages so shared links show a card.
+ * Theme CSS/JS and versioned assets (?ver=) stay crawlable so Google can render pages.
  */
 function niesv_robots_txt($output, $public) {
-    // ALWAYS allow social media crawlers regardless of WordPress privacy settings
-    // This is crucial for social media sharing to work properly
+    $preview_bots = array('facebookexternalhit', 'Twitterbot', 'LinkedInBot', 'WhatsApp');
 
-    $output = "User-agent: *\n";
-    $output .= "Allow: /\n";
+    $output = '';
+    foreach ($preview_bots as $bot) {
+        $output .= "User-agent: {$bot}\nAllow: /\n\n";
+    }
+
+    $output .= "User-agent: *\n";
+    if (!$public) {
+        return $output . "Disallow: /\n";
+    }
+
     $output .= "Disallow: /wp-admin/\n";
-    $output .= "Disallow: /wp-includes/\n";
-    $output .= "Disallow: /wp-content/plugins/\n";
-    $output .= "Disallow: /wp-content/themes/\n";
-    $output .= "Disallow: /wp-content/uploads/ai1wm-backups/\n";
+    $output .= "Allow: /wp-admin/admin-ajax.php\n";
+    $output .= "Disallow: /wp-content/ai1wm-backups/\n";
     $output .= "Disallow: /readme.html\n";
     $output .= "Disallow: /license.txt\n";
-    $output .= "Disallow: /*?*\n"; // Block query parameters
+    $output .= "Disallow: /?s=\n";
     $output .= "Disallow: /search/\n";
     $output .= "Disallow: /author/\n";
-    $output .= "Disallow: /tag/\n";
-    $output .= "\n";
 
-    // Explicitly allow social media crawlers
-    $output .= "User-agent: facebookexternalhit/1.1\n";
-    $output .= "Allow: /\n";
-    $output .= "\n";
-
-    $output .= "User-agent: facebookexternalhit\n";
-    $output .= "Allow: /\n";
-    $output .= "\n";
-
-    $output .= "User-agent: Twitterbot\n";
-    $output .= "Allow: /\n";
-    $output .= "\n";
-
-    $output .= "User-agent: LinkedInBot\n";
-    $output .= "Allow: /\n";
-    $output .= "\n";
-
-    $output .= "User-agent: WhatsApp\n";
-    $output .= "Allow: /\n";
-    $output .= "\n";
-
-    // Add sitemap
-    $output .= "Sitemap: " . home_url('/sitemap.xml') . "\n";
+    $sitemap_url = function_exists('get_sitemap_url') ? get_sitemap_url('index') : false;
+    if ($sitemap_url) {
+        $output .= "\nSitemap: " . $sitemap_url . "\n";
+    }
 
     return $output;
 }
@@ -6171,16 +6168,6 @@ function niesv_override_robots_meta($robots) {
 }
 add_filter('wp_robots', 'niesv_override_robots_meta', 99);
 
-/**
- * Ensure robots.txt allows social media crawlers
- */
-function niesv_ensure_robots_accessibility() {
-    // Log if site visibility is set to private (for debugging)
-    if (get_option('blog_public') != '1') {
-        error_log('NIESV: Site visibility is set to private, but social media crawlers are still allowed via robots.txt override');
-    }
-}
-add_action('init', 'niesv_ensure_robots_accessibility');
 
 /**
  * Add PWA meta tags to head
@@ -6204,7 +6191,15 @@ function niesv_social_meta_tags() {
     }
     $site_description = get_bloginfo('description');
     $site_url = home_url();
-    $current_url = is_front_page() ? $site_url : get_permalink();
+    global $wp;
+    if (is_front_page()) {
+        $current_url = $site_url;
+    } elseif (is_singular()) {
+        $current_url = get_permalink();
+    } else {
+        // Archives: get_permalink() would return the first post in the loop
+        $current_url = home_url(user_trailingslashit($wp->request));
+    }
 
     // Get page/post specific data
     if (is_singular()) {
@@ -6613,7 +6608,7 @@ function niesv_generate_seo_description($post_id = null) {
             $description = "Read about " . $post_title . " - Latest news and updates from " . $site_name;
         } elseif ($post_type === 'gallery') {
             $description = "View " . $post_title . " - Photo gallery from " . $site_name;
-        } elseif ($post_type === 'event') {
+        } elseif ($post_type === 'events') {
             $description = "Learn about " . $post_title . " - Upcoming event from " . $site_name;
         } else {
             $description = "Read about " . $post_title . " - " . $post_type_name . " from " . $site_name;
@@ -6730,13 +6725,12 @@ function niesv_auto_populate_seo_fields($post_id) {
         return;
     }
 
-    // Check if auto-populate is enabled (default to true for new posts)
-    $auto_populate = get_field('auto_populate_seo', $post_id);
-    if ($auto_populate === false || $auto_populate === null) {
-        // For new posts, set auto-populate to true by default
+    // Default auto-populate to on for posts that have never saved a choice.
+    // An editor unticking the box saves '0', which must be respected.
+    if (!metadata_exists('post', $post_id, 'auto_populate_seo')) {
         update_field('auto_populate_seo', true, $post_id);
-        $auto_populate = true;
     }
+    $auto_populate = get_field('auto_populate_seo', $post_id);
 
     // Only auto-populate if enabled
     if ($auto_populate) {
@@ -7247,10 +7241,13 @@ function niesv_update_notification_hash($value, $post_id, $field) {
     // Check if this is one of the notification fields
     $notification_fields = array('updates_title', 'update_headline', 'update_description', 'update_button_text', 'update_button_link');
 
-    if (in_array($field['name'], $notification_fields) && $post_id === 'options') {
-        // Generate new hash when notification content changes
-        $new_hash = md5(uniqid() . time());
-        update_field('notification_hash', $new_hash, 'option');
+    static $hash_updated = false;
+
+    if (!$hash_updated && in_array($field['name'], $notification_fields) && in_array($post_id, array('options', 'option'), true)
+        && (string) get_field($field['name'], 'option', false) !== (string) $value) {
+        // Content changed: a new hash makes browsers show the notification again
+        update_field('notification_hash', md5(uniqid('', true)), 'option');
+        $hash_updated = true;
     }
 
     return $value;

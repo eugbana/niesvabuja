@@ -25,7 +25,7 @@ This document provides comprehensive information about the Progressive Web App (
 niesv-theme/
 ├── manifest.json                 # Web App Manifest
 ├── sw.js                        # Service Worker
-├── pwa-test.html               # PWA Testing Suite
+├── page-pwa-test.php           # PWA Testing page (/pwa-test/, admins)
 ├── PWA-README.md               # This documentation
 ├── page-offline.php            # Offline page template
 ├── assets/
@@ -50,7 +50,7 @@ niesv-theme/
 ## 🧪 Testing the PWA
 
 ### Method 1: Use the Test Suite
-1. Navigate to `/wp-content/themes/niesv-theme/pwa-test.html`
+1. Navigate to `/pwa-test/`
 2. Run the automated tests
 3. Follow the manual testing instructions
 
@@ -164,7 +164,7 @@ Customize the offline page:
 - Ensure proper icon sizes
 
 ### Debug Tools
-- Use `pwa-test.html` for comprehensive testing
+- Use the `/pwa-test/` page for comprehensive testing
 - Check browser console for PWA-related logs
 - Use Lighthouse for PWA audit
 - Test with different browsers and devices

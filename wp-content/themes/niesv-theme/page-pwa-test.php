@@ -5,6 +5,12 @@
  * @package NIESV_Theme
  */
 
+// Diagnostics page: administrators only
+if (!current_user_can('manage_options')) {
+    wp_safe_redirect(home_url('/'));
+    exit;
+}
+
 get_header(); ?>
 
 <main class="main-content flex-1 px-10 py-8">
