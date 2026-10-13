@@ -32,26 +32,25 @@ if (!$property || $property->post_type !== 'properties' || $property->post_autho
 }
 
 // Check if user has property access (verified member)
-$membership_verified = get_user_meta($current_user->ID, 'membership_verified', true);
-if (!$membership_verified && !current_user_can('manage_options')) {
+if (!niesv_user_has_property_access($current_user->ID)) {
     wp_redirect(add_query_arg('error', 'not_verified', home_url('/property-dashboard/')));
     exit;
 }
 
 // Handle form submission
-if (isset($_POST['update_property']) && wp_verify_nonce($_POST['edit_property_nonce'], 'edit_property_' . $property_id)) {
-    $title = sanitize_text_field($_POST['property_title']);
-    $description = wp_kses_post($_POST['property_description']);
-    $price = floatval($_POST['property_price']);
-    $type = sanitize_text_field($_POST['property_type']);
-    $status = sanitize_text_field($_POST['property_status']);
-    $location = sanitize_text_field($_POST['property_location']);
-    $size = sanitize_text_field($_POST['property_size']);
-    $bedrooms = intval($_POST['property_bedrooms']);
-    $bathrooms = intval($_POST['property_bathrooms']);
-    $agent_name = sanitize_text_field($_POST['agent_name']);
-    $agent_email = sanitize_email($_POST['agent_email']);
-    $agent_mobile = sanitize_text_field($_POST['agent_mobile']);
+if (isset($_POST['update_property']) && wp_verify_nonce($_POST['edit_property_nonce'] ?? '', 'edit_property_' . $property_id)) {
+    $title = sanitize_text_field(wp_unslash($_POST['property_title'] ?? ''));
+    $description = wp_kses_post(wp_unslash($_POST['property_description'] ?? ''));
+    $price = floatval(wp_unslash($_POST['property_price'] ?? ''));
+    $type = sanitize_text_field(wp_unslash($_POST['property_type'] ?? ''));
+    $status = sanitize_text_field(wp_unslash($_POST['property_status'] ?? ''));
+    $location = sanitize_text_field(wp_unslash($_POST['property_location'] ?? ''));
+    $size = sanitize_text_field(wp_unslash($_POST['property_size'] ?? ''));
+    $bedrooms = intval(wp_unslash($_POST['property_bedrooms'] ?? ''));
+    $bathrooms = intval(wp_unslash($_POST['property_bathrooms'] ?? ''));
+    $agent_name = sanitize_text_field(wp_unslash($_POST['agent_name'] ?? ''));
+    $agent_email = sanitize_email(wp_unslash($_POST['agent_email'] ?? ''));
+    $agent_mobile = sanitize_text_field(wp_unslash($_POST['agent_mobile'] ?? ''));
     
     $errors = array();
     
@@ -105,11 +104,7 @@ if (isset($_POST['update_property']) && wp_verify_nonce($_POST['edit_property_no
             
             // Handle featured image upload
             if (!empty($_FILES['featured_image']['name'])) {
-                require_once(ABSPATH . 'wp-admin/includes/image.php');
-                require_once(ABSPATH . 'wp-admin/includes/file.php');
-                require_once(ABSPATH . 'wp-admin/includes/media.php');
-                
-                $attachment_id = media_handle_upload('featured_image', $property_id);
+                $attachment_id = niesv_handle_property_image_upload('featured_image', $property_id);
                 if (!is_wp_error($attachment_id)) {
                     set_post_thumbnail($property_id, $attachment_id);
                 }

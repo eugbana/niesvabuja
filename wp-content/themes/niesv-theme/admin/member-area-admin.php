@@ -424,7 +424,7 @@ class NIESV_Member_Area_Admin {
      * Handle add member form submission
      */
     private function handle_add_member() {
-        if (!wp_verify_nonce($_POST['niesv_add_member_nonce'], 'niesv_add_member')) {
+        if (!wp_verify_nonce($_POST['niesv_add_member_nonce'] ?? '', 'niesv_add_member')) {
             wp_die('Security check failed');
         }
 

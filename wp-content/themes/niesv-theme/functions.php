@@ -4423,17 +4423,17 @@ function niesv_dashboard_widget_content() {
  */
 function niesv_handle_contact_form() {
     // Verify nonce
-    if (!wp_verify_nonce($_POST['niesv_contact_nonce'], 'niesv_contact_form')) {
+    if (!wp_verify_nonce($_POST['niesv_contact_nonce'] ?? '', 'niesv_contact_form')) {
         wp_die('Security check failed');
     }
 
     // Sanitize form data
-    $first_name = sanitize_text_field($_POST['first_name']);
-    $last_name = sanitize_text_field($_POST['last_name']);
-    $email = sanitize_email($_POST['email']);
-    $phone = sanitize_text_field($_POST['phone']);
-    $subject = sanitize_text_field($_POST['subject']);
-    $message = sanitize_textarea_field($_POST['message']);
+    $first_name = sanitize_text_field(wp_unslash($_POST['first_name'] ?? ''));
+    $last_name = sanitize_text_field(wp_unslash($_POST['last_name'] ?? ''));
+    $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
+    $phone = sanitize_text_field(wp_unslash($_POST['phone'] ?? ''));
+    $subject = sanitize_text_field(wp_unslash($_POST['subject'] ?? ''));
+    $message = sanitize_textarea_field(wp_unslash($_POST['message'] ?? ''));
 
     // Validate required fields
     if (empty($first_name) || empty($last_name) || empty($email) || empty($subject) || empty($message)) {
@@ -4475,6 +4475,31 @@ function niesv_handle_contact_form() {
 }
 add_action('admin_post_niesv_contact_form', 'niesv_handle_contact_form');
 add_action('admin_post_nopriv_niesv_contact_form', 'niesv_handle_contact_form');
+
+/**
+ * Never page-cache pages whose forms carry a nonce. A cached copy keeps serving a
+ * nonce that expires after a day (LiteSpeed caches public pages for a week), and
+ * the form then fails with "Security check failed" / "session expired".
+ */
+function niesv_nocache_form_pages() {
+    if (is_page(array('register', 'login', 'contact'))) {
+        do_action('litespeed_control_set_nocache', 'NIESV: page form uses a nonce');
+        nocache_headers();
+    }
+}
+add_action('template_redirect', 'niesv_nocache_form_pages');
+
+/**
+ * Sanitize a map embed field: allows only an <iframe> with the usual embed attributes.
+ */
+function niesv_kses_embed($html) {
+    return wp_kses($html, array(
+        'iframe' => array(
+            'src' => true, 'width' => true, 'height' => true, 'style' => true, 'title' => true,
+            'allowfullscreen' => true, 'loading' => true, 'referrerpolicy' => true, 'frameborder' => true,
+        ),
+    ));
+}
 
 /**
  * Display contact form messages
@@ -4715,19 +4740,23 @@ function niesv_create_auth_pages() {
 }
 add_action('after_setup_theme', 'niesv_create_auth_pages');
 
-// Allow subscribers to create properties
-function niesv_allow_subscribers_to_create_properties() {
+// Remove the capabilities an older version granted to subscribers. Property access
+// is enforced by niesv_user_has_property_access() in the front-end handlers, and
+// upload_files exposed the wp-admin media uploader to every subscriber.
+// Checks the in-memory role each request and only writes when a stray cap is found.
+function niesv_remove_legacy_subscriber_caps() {
     $subscriber = get_role('subscriber');
-    if ($subscriber) {
-        $subscriber->add_cap('edit_properties');
-        $subscriber->add_cap('edit_published_properties');
-        $subscriber->add_cap('publish_properties');
-        $subscriber->add_cap('delete_properties');
-        $subscriber->add_cap('delete_published_properties');
-        $subscriber->add_cap('upload_files');
+    if (!$subscriber) {
+        return;
+    }
+
+    foreach (array('edit_properties', 'edit_published_properties', 'publish_properties', 'delete_properties', 'delete_published_properties', 'upload_files') as $cap) {
+        if ($subscriber->has_cap($cap)) {
+            $subscriber->remove_cap($cap);
+        }
     }
 }
-add_action('init', 'niesv_allow_subscribers_to_create_properties');
+add_action('init', 'niesv_remove_legacy_subscriber_caps');
 
 // Register Member Area custom post type
 function niesv_register_member_area_post_type() {
@@ -5064,23 +5093,45 @@ function niesv_user_has_property_access($user_id = null) {
         return false;
     }
 
+    if (user_can($user_id, 'manage_options')) {
+        return true;
+    }
+
     // Check if user is verified member
     $membership_verified = get_user_meta($user_id, 'membership_verified', true);
 
     return $membership_verified === true || $membership_verified === '1';
 }
 
-// Restrict property creation to verified members
-function niesv_restrict_property_creation($caps, $cap, $user_id, $args) {
-    if ($cap === 'edit_properties' || $cap === 'publish_properties') {
-        if (!niesv_user_has_property_access($user_id)) {
-            return array('do_not_allow');
-        }
+// Nonce-protected link for deleting a property from the front-end dashboards
+function niesv_delete_property_url($property_id) {
+    return wp_nonce_url(
+        add_query_arg(array('action' => 'delete', 'property_id' => $property_id)),
+        'niesv_delete_property_' . $property_id
+    );
+}
+
+// Handle a delete request from a front-end dashboard; redirects on success
+function niesv_handle_property_delete_request() {
+    if (!isset($_GET['action'], $_GET['property_id']) || $_GET['action'] !== 'delete') {
+        return;
     }
 
-    return $caps;
+    $property_id = absint($_GET['property_id']);
+    $property = get_post($property_id);
+    $nonce = isset($_GET['_wpnonce']) ? sanitize_text_field(wp_unslash($_GET['_wpnonce'])) : '';
+
+    if (!wp_verify_nonce($nonce, 'niesv_delete_property_' . $property_id)
+        || !$property || $property->post_type !== 'properties'
+        || (int) $property->post_author !== get_current_user_id()
+        || !niesv_user_has_property_access()) {
+        return;
+    }
+
+    wp_delete_post($property_id, true);
+    wp_redirect(add_query_arg('deleted', '1', remove_query_arg(array('action', 'property_id', '_wpnonce'))));
+    exit;
 }
-add_filter('user_has_cap', 'niesv_restrict_property_creation', 10, 4);
 
 // Add membership verification status to user profile
 function niesv_add_membership_fields_to_profile($user) {
@@ -5147,7 +5198,7 @@ function niesv_save_membership_fields_from_profile($user_id) {
     }
 
     if (isset($_POST['membership_no'])) {
-        update_user_meta($user_id, 'membership_no', sanitize_text_field($_POST['membership_no']));
+        update_user_meta($user_id, 'membership_no', sanitize_text_field(wp_unslash($_POST['membership_no'] ?? '')));
     }
 
     if (isset($_POST['membership_verified'])) {
@@ -5155,11 +5206,11 @@ function niesv_save_membership_fields_from_profile($user_id) {
     }
 
     if (isset($_POST['member_category'])) {
-        update_user_meta($user_id, 'member_category', sanitize_text_field($_POST['member_category']));
+        update_user_meta($user_id, 'member_category', sanitize_text_field(wp_unslash($_POST['member_category'] ?? '')));
     }
 
     if (isset($_POST['member_branch'])) {
-        update_user_meta($user_id, 'member_branch', sanitize_text_field($_POST['member_branch']));
+        update_user_meta($user_id, 'member_branch', sanitize_text_field(wp_unslash($_POST['member_branch'] ?? '')));
     }
 }
 add_action('personal_options_update', 'niesv_save_membership_fields_from_profile');
@@ -5292,7 +5343,7 @@ add_action('admin_notices', 'niesv_show_bulk_action_notices');
 // Handle profile update AJAX request
 function niesv_handle_profile_update() {
     // Check nonce
-    if (!wp_verify_nonce($_POST['profile_nonce'], 'niesv_update_profile')) {
+    if (!wp_verify_nonce($_POST['profile_nonce'] ?? '', 'niesv_update_profile')) {
         wp_send_json_error('Security check failed');
     }
 
@@ -5305,11 +5356,11 @@ function niesv_handle_profile_update() {
     $user_id = $current_user->ID;
 
     // Sanitize input data
-    $first_name = sanitize_text_field($_POST['first_name']);
-    $last_name = sanitize_text_field($_POST['last_name']);
-    $email = sanitize_email($_POST['email']);
-    $phone = sanitize_text_field($_POST['phone']);
-    $bio = sanitize_textarea_field($_POST['bio']);
+    $first_name = sanitize_text_field(wp_unslash($_POST['first_name'] ?? ''));
+    $last_name = sanitize_text_field(wp_unslash($_POST['last_name'] ?? ''));
+    $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
+    $phone = sanitize_text_field(wp_unslash($_POST['phone'] ?? ''));
+    $bio = sanitize_textarea_field(wp_unslash($_POST['bio'] ?? ''));
 
     // Validate email
     if (!is_email($email)) {
@@ -5317,7 +5368,14 @@ function niesv_handle_profile_update() {
     }
 
     // Check if email is already in use by another user
-    if ($email !== $current_user->user_email) {
+    if (strtolower($email) !== strtolower($current_user->user_email)) {
+        // The account email controls password resets, so changing it needs the current password
+        // Not unslashed: core hashes and checks passwords in their slashed $_POST form
+        $current_password = isset($_POST['current_password']) ? $_POST['current_password'] : '';
+        if ($current_password === '' || !wp_check_password($current_password, $current_user->user_pass, $user_id)) {
+            wp_send_json_error('Please enter your current password to change your email address');
+        }
+
         $existing_user = get_user_by('email', $email);
         if ($existing_user && $existing_user->ID !== $user_id) {
             wp_send_json_error('This email address is already in use');

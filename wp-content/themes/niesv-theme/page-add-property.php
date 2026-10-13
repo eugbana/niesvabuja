@@ -15,6 +15,12 @@ if (!is_user_logged_in()) {
 
 $current_user = wp_get_current_user();
 
+// Only verified members (and admins) can list properties
+if (!niesv_user_has_property_access($current_user->ID)) {
+    wp_redirect(add_query_arg('error', 'not_verified', home_url('/property-dashboard/')));
+    exit;
+}
+
 // Keep this form in step with the Property Details ACF field group used in wp-admin.
 $property_types = array('residential', 'commercial', 'land', 'industrial');
 $property_statuses = array('for_sale', 'for_rent', 'sold', 'rented');

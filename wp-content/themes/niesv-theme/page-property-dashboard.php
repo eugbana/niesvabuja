@@ -25,17 +25,7 @@ if (!empty($membership_no)) {
 }
 
 // Handle property deletion
-if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['property_id'])) {
-    $property_id = intval($_GET['property_id']);
-    $property = get_post($property_id);
-    
-    // Check if user owns this property
-    if ($property && $property->post_author == $current_user->ID && $property->post_type === 'properties') {
-        wp_delete_post($property_id, true);
-        wp_redirect(add_query_arg('deleted', '1', remove_query_arg(array('action', 'property_id'))));
-        exit;
-    }
-}
+niesv_handle_property_delete_request();
 
 // Get user's properties
 $user_properties = get_posts(array(
