@@ -1,17 +1,14 @@
 /**
  * NIESV Theme JavaScript
+ *
+ * The mobile menu and desktop dropdowns are handled by header.php and style.css.
  */
+
+(function($) {
+'use strict';
 
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    'use strict';
-
-    // Mobile menu toggle
-    initMobileMenu();
-
-    // Dropdown menu functionality
-    initDropdownMenus();
-
     // Smooth scrolling for anchor links
     initSmoothScrolling();
 
@@ -30,116 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // PWA notifications
     initPWANotifications();
 });
-
-    /**
-     * Initialize mobile menu
-     */
-    function initMobileMenu() {
-        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-        const mobileMenu = document.getElementById('mobile-menu');
-
-        if (mobileMenuToggle && mobileMenu) {
-            mobileMenuToggle.addEventListener('click', function() {
-                mobileMenu.classList.toggle('hidden');
-
-                // Toggle hamburger icon
-                const icon = this.querySelector('svg');
-                if (mobileMenu.classList.contains('hidden')) {
-                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
-                } else {
-                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
-                }
-            });
-
-            // Close mobile menu when clicking outside
-            document.addEventListener('click', function(event) {
-                if (!mobileMenuToggle.contains(event.target) && !mobileMenu.contains(event.target)) {
-                    mobileMenu.classList.add('hidden');
-                    const icon = mobileMenuToggle.querySelector('svg');
-                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
-                }
-            });
-
-            // Handle mobile submenu toggles
-            const mobileMenuItems = mobileMenu.querySelectorAll('li.menu-item-has-children > a');
-            mobileMenuItems.forEach(function(item) {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const submenu = this.nextElementSibling;
-                    if (submenu && submenu.classList.contains('sub-menu')) {
-                        submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
-                    }
-                });
-            });
-        }
-    }
-
-    /**
-     * Initialize dropdown menus
-     */
-    function initDropdownMenus() {
-        const dropdownItems = document.querySelectorAll('.main-navigation .menu-item-has-children');
-
-        dropdownItems.forEach(function(item) {
-            const link = item.querySelector('a');
-            const submenu = item.querySelector('.sub-menu, ul');
-
-            if (link && submenu) {
-                // Handle click events for mobile
-                link.addEventListener('click', function(e) {
-                    if (window.innerWidth <= 768) {
-                        e.preventDefault();
-
-                        // Toggle submenu visibility
-                        if (submenu.style.display === 'block') {
-                            submenu.style.display = 'none';
-                        } else {
-                            // Hide other open submenus
-                            dropdownItems.forEach(function(otherItem) {
-                                const otherSubmenu = otherItem.querySelector('.sub-menu, ul');
-                                if (otherSubmenu && otherSubmenu !== submenu) {
-                                    otherSubmenu.style.display = 'none';
-                                }
-                            });
-                            submenu.style.display = 'block';
-                        }
-                    }
-                });
-
-                // Handle hover for desktop
-                item.addEventListener('mouseenter', function() {
-                    if (window.innerWidth > 768) {
-                        submenu.style.opacity = '1';
-                        submenu.style.visibility = 'visible';
-                        submenu.style.transform = 'translateY(0)';
-                    }
-                });
-
-                item.addEventListener('mouseleave', function() {
-                    if (window.innerWidth > 768) {
-                        submenu.style.opacity = '0';
-                        submenu.style.visibility = 'hidden';
-                        submenu.style.transform = 'translateY(-10px)';
-                    }
-                });
-            }
-        });
-
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.main-navigation')) {
-                dropdownItems.forEach(function(item) {
-                    const submenu = item.querySelector('.sub-menu, ul');
-                    if (submenu) {
-                        submenu.style.display = 'none';
-                        submenu.style.opacity = '0';
-                        submenu.style.visibility = 'hidden';
-                        submenu.style.transform = 'translateY(-10px)';
-                    }
-                });
-            }
-        });
-    }
 
     /**
      * Initialize smooth scrolling
@@ -163,22 +50,25 @@ document.addEventListener('DOMContentLoaded', function() {
      * Initialize lightbox for images
      */
     function initLightbox() {
-        // Create lightbox HTML
-        if (!document.getElementById('lightbox')) {
-            const lightboxHTML = `
-                <div id="lightbox" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4">
-                    <div class="relative max-w-4xl max-h-full">
-                        <img id="lightbox-image" src="" alt="" class="max-w-full max-h-full object-contain">
-                        <button id="lightbox-close" class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300 transition-colors">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', lightboxHTML);
+        // Pages such as single-gallery.php ship their own lightbox
+        if (document.getElementById('lightbox')) {
+            return;
         }
+
+        // Create lightbox HTML
+        const lightboxHTML = `
+            <div id="lightbox" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4">
+                <div class="relative max-w-4xl max-h-full">
+                    <img id="lightbox-image" src="" alt="" class="max-w-full max-h-full object-contain">
+                    <button id="lightbox-close" class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300 transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', lightboxHTML);
 
         // Lightbox functionality
         window.openLightbox = function(imageSrc) {
@@ -195,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const lightbox = document.getElementById('lightbox');
             const lightboxClose = document.getElementById('lightbox-close');
             
-            if (event.target === lightbox || event.target === lightboxClose || lightboxClose.contains(event.target)) {
+            if (lightbox && lightboxClose && (event.target === lightbox || lightboxClose.contains(event.target))) {
                 lightbox.classList.add('hidden');
                 document.body.style.overflow = 'auto';
             }
@@ -203,8 +93,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Close lightbox with escape key
         document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                const lightbox = document.getElementById('lightbox');
+            const lightbox = document.getElementById('lightbox');
+            if (event.key === 'Escape' && lightbox) {
                 lightbox.classList.add('hidden');
                 document.body.style.overflow = 'auto';
             }
@@ -300,24 +190,6 @@ document.addEventListener('DOMContentLoaded', function() {
             observer.observe(element);
         });
     }
-
-    /**
-     * Newsletter subscription
-     */
-    window.subscribeNewsletter = function(form) {
-        const email = form.querySelector('input[type="email"]').value;
-        
-        if (!email) {
-            alert('Please enter your email address.');
-            return false;
-        }
-        
-        // Here you would typically send the email to your newsletter service
-        // For now, we'll just show a success message
-        alert('Thank you for subscribing to our newsletter!');
-        form.reset();
-        return false;
-    };
 
     /**
      * Property filter functionality

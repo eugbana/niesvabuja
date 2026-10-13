@@ -50,54 +50,44 @@ function niesv_theme_setup() {
 add_action('after_setup_theme', 'niesv_theme_setup');
 
 /**
+ * Version string for a theme asset, from its modification time, so browsers
+ * fetch the new file after every deploy (assets are cached for a year).
+ */
+function niesv_asset_version($relative_path) {
+    $file = get_template_directory() . '/' . ltrim($relative_path, '/');
+    return file_exists($file) ? (string) filemtime($file) : wp_get_theme()->get('Version');
+}
+
+/**
+ * Cache version for the service worker: changes whenever a precached asset changes.
+ */
+function niesv_pwa_cache_version() {
+    return substr(md5(implode('|', array_map('niesv_asset_version', array('style.css', 'assets/css/tailwind.css', 'assets/js/theme.js', 'assets/js/pwa.js', 'sw.js')))), 0, 10);
+}
+
+/**
  * Enqueue Scripts and Styles
  */
 function niesv_theme_scripts() {
-    // Note: Using system fonts now, no need for Google Fonts
-    // System font stack is defined in CSS variables for better performance
-
-    // Enqueue Tailwind CSS from CDN
-    wp_enqueue_style('niesv-tailwind',
-        'https://cdn.tailwindcss.com?plugins=forms,container-queries',
-        array(),
-        '3.4.0'
-    );
-
-    // Enqueue theme stylesheet AFTER Tailwind
     wp_enqueue_style('niesv-style',
         get_stylesheet_uri(),
-        array('niesv-tailwind'),
-        wp_get_theme()->get('Version')
+        array(),
+        niesv_asset_version('style.css')
     );
 
-    // Add inline CSS for Tailwind configuration
-    $tailwind_config = "
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'niesv-primary': 'rgba(0, 0, 40, 1)',
-                        'niesv-secondary': '#e7edf4',
-                        'niesv-text-primary': '#0d141c',
-                        'niesv-text-secondary': '#49739c',
-                        'niesv-background': '#f8fafc',
-                        'niesv-accent-gold': '#d4af37'
-                    },
-                    fontFamily: {
-                        'newsreader': ['Newsreader', 'serif'],
-                        'noto-sans': ['Noto Sans', 'sans-serif']
-                    }
-                }
-            }
-        }
-    ";
-    wp_add_inline_script('niesv-tailwind', $tailwind_config, 'before');
+    // Tailwind, prebuilt by `npm run build` (see tailwind.config.js). Loaded after
+    // style.css so utilities win ties, as they did with the old in-browser CDN build.
+    wp_enqueue_style('niesv-tailwind',
+        get_template_directory_uri() . '/assets/css/tailwind.css',
+        array('niesv-style'),
+        niesv_asset_version('assets/css/tailwind.css')
+    );
 
     // Enqueue theme JavaScript
     wp_enqueue_script('niesv-script',
         get_template_directory_uri() . '/assets/js/theme.js',
         array('jquery'),
-        wp_get_theme()->get('Version'),
+        niesv_asset_version('assets/js/theme.js'),
         true
     );
 
@@ -105,7 +95,7 @@ function niesv_theme_scripts() {
     wp_enqueue_script('niesv-pwa-script',
         get_template_directory_uri() . '/assets/js/pwa.js',
         array(),
-        wp_get_theme()->get('Version'),
+        niesv_asset_version('assets/js/pwa.js'),
         true
     );
 
@@ -122,7 +112,7 @@ function niesv_theme_scripts() {
         'theme_url' => get_template_directory_uri(),
         'home_url' => home_url('/'),
         'offline_url' => home_url('/offline/'),
-        'cache_version' => wp_get_theme()->get('Version')
+        'cache_version' => niesv_pwa_cache_version()
     ));
 }
 add_action('wp_enqueue_scripts', 'niesv_theme_scripts');
@@ -132,7 +122,7 @@ add_action('wp_enqueue_scripts', 'niesv_theme_scripts');
  */
 function niesv_admin_scripts($hook) {
     if ('post.php' == $hook || 'post-new.php' == $hook) {
-        wp_enqueue_script('niesv-admin-script', get_template_directory_uri() . '/js/admin.js', array('jquery'), '1.0.0', true);
+        wp_enqueue_script('niesv-admin-script', get_template_directory_uri() . '/js/admin.js', array('jquery'), niesv_asset_version('js/admin.js'), true);
     }
 }
 add_action('admin_enqueue_scripts', 'niesv_admin_scripts');
@@ -319,47 +309,18 @@ function niesv_flush_rewrite_rules() {
 add_action('after_switch_theme', 'niesv_flush_rewrite_rules');
 
 /**
- * Debug template loading for gallery posts
+ * Flush rewrite rules once after the theme's post types/rewrites change.
+ * Bump NIESV_REWRITE_VERSION whenever register_post_type() slugs change.
  */
-function niesv_debug_template_loading($template) {
-    global $wp_query;
+const NIESV_REWRITE_VERSION = '1';
 
-    if (is_singular('gallery')) {
-        error_log('NIESV: Loading gallery single template: ' . $template);
-        error_log('NIESV: Post ID: ' . get_the_ID());
-        error_log('NIESV: Post type: ' . get_post_type());
-    }
-
-    if (is_post_type_archive('gallery')) {
-        error_log('NIESV: Loading gallery archive template: ' . $template);
-    }
-
-    return $template;
-}
-add_filter('template_include', 'niesv_debug_template_loading');
-
-/**
- * Force rewrite rules flush when needed
- */
-function niesv_check_rewrite_rules() {
-    $rules = get_option('rewrite_rules');
-    $gallery_rule_exists = false;
-
-    if ($rules) {
-        foreach ($rules as $pattern => $replacement) {
-            if (strpos($pattern, 'gallery') !== false && strpos($replacement, 'gallery') !== false) {
-                $gallery_rule_exists = true;
-                break;
-            }
-        }
-    }
-
-    if (!$gallery_rule_exists) {
+function niesv_maybe_flush_rewrite_rules() {
+    if (get_option('niesv_rewrite_version') !== NIESV_REWRITE_VERSION) {
         flush_rewrite_rules();
-        error_log('NIESV: Rewrite rules flushed due to missing gallery rules');
+        update_option('niesv_rewrite_version', NIESV_REWRITE_VERSION);
     }
 }
-add_action('wp_loaded', 'niesv_check_rewrite_rules');
+add_action('wp_loaded', 'niesv_maybe_flush_rewrite_rules');
 
 /**
  * Ensure gallery post type query vars are recognized
@@ -4048,8 +4009,6 @@ function niesv_register_acf_blocks() {
     // Check if function exists
     if (function_exists('acf_register_block_type')) {
 
-        // Debug: Log that blocks are being registered
-        error_log('NIESV: Registering ACF blocks');
 
         // Hero Section Block
         acf_register_block_type(array(
@@ -4076,8 +4035,6 @@ function niesv_register_acf_blocks() {
             ),
         ));
 
-        // Debug: Log hero block registration
-        error_log('NIESV: Hero Section block registered');
 
         // News Cards Block
         acf_register_block_type(array(
@@ -4325,7 +4282,7 @@ function niesv_block_editor_styles() {
         'niesv-block-editor-styles',
         get_template_directory_uri() . '/assets/css/block-editor.css',
         array(),
-        wp_get_theme()->get('Version')
+        niesv_asset_version('assets/css/block-editor.css')
     );
 }
 add_action('enqueue_block_editor_assets', 'niesv_block_editor_styles');
@@ -6036,55 +5993,6 @@ function niesv_pagination($query = null, $screen_reader_text = 'Page navigation'
 }
 
 /**
- * Ensure Tailwind CSS is loaded properly
- */
-function niesv_add_tailwind_config() {
-    if (!is_admin()) {
-        ?>
-        <script>
-            // Ensure Tailwind is loaded
-            if (typeof tailwind !== 'undefined') {
-                console.log('NIESV: Tailwind CSS loaded successfully');
-            } else {
-                console.warn('NIESV: Tailwind CSS not loaded');
-            }
-        </script>
-        <?php
-    }
-}
-add_action('wp_footer', 'niesv_add_tailwind_config');
-
-/**
- * Debug function to check if blocks are being processed
- */
-function niesv_debug_blocks($content) {
-    if (has_blocks($content)) {
-        error_log('NIESV: Page has blocks');
-        $blocks = parse_blocks($content);
-        foreach ($blocks as $block) {
-            error_log('NIESV: Block found - ' . $block['blockName']);
-        }
-    } else {
-        error_log('NIESV: No blocks found in content');
-    }
-    return $content;
-}
-add_filter('the_content', 'niesv_debug_blocks', 5);
-
-/**
- * Ensure blocks are rendered properly
- */
-function niesv_ensure_block_rendering() {
-    // Make sure block rendering is enabled
-    if (!function_exists('do_blocks')) {
-        error_log('NIESV: do_blocks function not available');
-    } else {
-        error_log('NIESV: Block rendering is available');
-    }
-}
-add_action('init', 'niesv_ensure_block_rendering');
-
-/**
  * PWA Functionality
  */
 
@@ -6931,9 +6839,11 @@ function niesv_register_service_worker() {
     <script>
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
+            // LiteSpeed can delay this script until after the load event has fired,
+            // so register straight away in that case instead of waiting for 'load'.
+            var niesvRegisterSW = function() {
                 // Register service worker from root to have full scope
-                navigator.serviceWorker.register('<?php echo home_url('/sw.js'); ?>', {
+                navigator.serviceWorker.register(<?php echo wp_json_encode(home_url('/sw.js')); ?>, {
                     scope: '/'
                 }).then(function(registration) {
                     console.log('NIESV PWA: Service Worker registered successfully:', registration.scope);
@@ -6953,7 +6863,12 @@ function niesv_register_service_worker() {
                     console.log('NIESV PWA: Service Worker registration failed:', error);
                     console.log('NIESV PWA: Make sure you are accessing the site via HTTP/HTTPS, not file://');
                 });
-            });
+            };
+            if (document.readyState === 'complete') {
+                niesvRegisterSW();
+            } else {
+                window.addEventListener('load', niesvRegisterSW);
+            }
         } else {
             console.log('NIESV PWA: Service Worker not supported in this browser');
         }
@@ -6969,18 +6884,60 @@ function niesv_register_service_worker() {
 }
 
 /**
+ * Path of the current request relative to the site root, e.g. '/sw.js'
+ */
+function niesv_request_path() {
+    $path = wp_parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/', PHP_URL_PATH);
+    $home_path = (string) wp_parse_url(home_url('/'), PHP_URL_PATH);
+    if ($home_path !== '/' && strpos($path, rtrim($home_path, '/')) === 0) {
+        $path = substr($path, strlen(rtrim($home_path, '/')));
+    }
+    return $path;
+}
+
+/**
+ * Manifest image paths are relative to the theme folder, but the manifest is served
+ * from the site root, so make them absolute. Entries whose file is missing are
+ * dropped so browsers don't report broken icons.
+ */
+function niesv_resolve_manifest_images($node) {
+    if (!is_array($node)) {
+        return $node;
+    }
+
+    foreach ($node as $key => $value) {
+        if (in_array($key, array('icons', 'screenshots'), true) && is_array($value)) {
+            $kept = array();
+            foreach ($value as $image) {
+                if (isset($image['src']) && !preg_match('#^(https?:)?/#', $image['src'])) {
+                    if (!file_exists(get_template_directory() . '/' . $image['src'])) {
+                        continue;
+                    }
+                    $image['src'] = get_template_directory_uri() . '/' . $image['src'];
+                }
+                $kept[] = $image;
+            }
+            $node[$key] = $kept;
+        } else {
+            $node[$key] = niesv_resolve_manifest_images($value);
+        }
+    }
+
+    return $node;
+}
+
+/**
  * Handle manifest.json requests
  */
 function niesv_serve_manifest() {
-    // Check if request is for manifest.json
-    $request_uri = $_SERVER['REQUEST_URI'];
-    if (strpos($request_uri, 'manifest.json') !== false || isset($_GET['manifest'])) {
+    if (niesv_request_path() === '/manifest.json') {
         header('Content-Type: application/json');
         header('Cache-Control: public, max-age=86400'); // Cache for 1 day
 
         $manifest_path = get_template_directory() . '/manifest.json';
-        if (file_exists($manifest_path)) {
-            readfile($manifest_path);
+        $manifest = file_exists($manifest_path) ? json_decode(file_get_contents($manifest_path), true) : null;
+        if (is_array($manifest)) {
+            echo wp_json_encode(niesv_resolve_manifest_images($manifest), JSON_UNESCAPED_SLASHES);
         } else {
             // Fallback manifest
             echo json_encode(array(
@@ -7001,15 +6958,15 @@ add_action('init', 'niesv_serve_manifest');
  * Handle service worker requests
  */
 function niesv_serve_service_worker() {
-    // Check if request is for sw.js
-    $request_uri = $_SERVER['REQUEST_URI'];
-    if (strpos($request_uri, 'sw.js') !== false || isset($_GET['sw'])) {
+    if (niesv_request_path() === '/sw.js') {
         header('Content-Type: application/javascript');
         header('Service-Worker-Allowed: /');
         header('Cache-Control: no-cache'); // Don't cache service worker
 
         $sw_path = get_template_directory() . '/sw.js';
         if (file_exists($sw_path)) {
+            // Changing bytes make browsers install the new worker, which drops old caches
+            echo 'const NIESV_CACHE_VERSION = ' . wp_json_encode(niesv_pwa_cache_version()) . ";\n";
             readfile($sw_path);
         } else {
             // Fallback minimal service worker
@@ -7028,7 +6985,7 @@ function niesv_pwa_install_prompt() {
     <div id="pwa-install-banner" class="fixed bottom-4 left-4 right-4 bg-[var(--primary-color)] text-white p-4 rounded-lg shadow-lg z-50 hidden">
         <div class="flex items-center justify-between">
             <div class="flex-1">
-                <h3 class="font-bold text-lg">Install NIESV App</h3>
+                <h3 class="font-bold text-lg text-white">Install NIESV App</h3>
                 <p class="text-sm opacity-90">Get quick access to NIESV services on your device</p>
             </div>
             <div class="flex gap-2 ml-4">

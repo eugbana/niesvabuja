@@ -27,7 +27,6 @@
     <link rel="manifest" href="<?php echo home_url('/manifest.json'); ?>">
 
     <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" sizes="72x72" href="<?php echo get_template_directory_uri(); ?>/assets/icons/icon-72x72.png">
     <link rel="apple-touch-icon" sizes="96x96" href="<?php echo get_template_directory_uri(); ?>/assets/icons/icon-96x96.png">
     <link rel="apple-touch-icon" sizes="128x128" href="<?php echo get_template_directory_uri(); ?>/assets/icons/icon-128x128.png">
     <link rel="apple-touch-icon" sizes="144x144" href="<?php echo get_template_directory_uri(); ?>/assets/icons/icon-144x144.png">
@@ -35,42 +34,14 @@
     <link rel="apple-touch-icon" sizes="192x192" href="<?php echo get_template_directory_uri(); ?>/assets/icons/icon-192x192.png">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo get_template_directory_uri(); ?>/assets/icons/icon-72x72.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo get_template_directory_uri(); ?>/assets/icons/icon-72x72.png">
+    <link rel="icon" type="image/svg+xml" href="<?php echo get_template_directory_uri(); ?>/assets/icons/icon-base.svg">
+    <link rel="icon" type="image/png" sizes="96x96" href="<?php echo get_template_directory_uri(); ?>/assets/icons/icon-96x96.png">
     
     <!-- Preconnect to Google Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
     <!-- Google Fonts -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?display=swap&family=Newsreader:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900" onload="this.rel='stylesheet'">
-    
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-    <!-- Tailwind CSS Script -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
-
-    <!-- Tailwind CSS Configuration -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'niesv-primary': 'rgba(0, 0, 40, 1)',
-                        'niesv-secondary': '#e7edf4',
-                        'niesv-text-primary': '#0d141c',
-                        'niesv-text-secondary': '#49739c',
-                        'niesv-background': '#f8fafc',
-                        'niesv-accent-gold': '#d4af37'
-                    },
-                    fontFamily: {
-                        'newsreader': ['Newsreader', 'serif'],
-                        'noto-sans': ['Noto Sans', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?display=swap&family=Newsreader:wght@400;500;700;800" onload="this.rel='stylesheet'">
     
     <?php wp_head(); ?>
 </head>

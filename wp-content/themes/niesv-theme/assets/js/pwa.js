@@ -168,9 +168,6 @@
         console.log('NIESV PWA: Back online');
         updateOnlineStatus();
         showNotification('You\'re back online!', 'success');
-        
-        // Sync any pending data
-        syncPendingData();
     }
 
     /**
@@ -248,8 +245,8 @@
         // Handle app shortcuts
         initAppShortcuts();
         
-        // Handle background sync
-        initBackgroundSync();
+        // Block form submissions while offline
+        initOfflineFormGuard();
     }
 
     /**
@@ -332,72 +329,22 @@
     }
 
     /**
-     * Initialize background sync
+     * Stop form submissions while offline. The form keeps what the user typed,
+     * so they can submit again once connected. (Queuing submissions for later
+     * is unreliable here: nonces expire and file inputs cannot be stored.)
      */
-    function initBackgroundSync() {
-        if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
-            // Register for background sync when forms are submitted offline
-            document.addEventListener('submit', function(e) {
-                if (!navigator.onLine) {
-                    e.preventDefault();
-                    storeFormForSync(e.target);
-                    showNotification('Form saved. Will submit when back online.', 'info');
-                }
-            });
-        }
-    }
+    function initOfflineFormGuard() {
+        // Remove submissions queued by the old (broken) background sync
+        try {
+            localStorage.removeItem('niesv_pending_forms');
+        } catch (e) {}
 
-    /**
-     * Store form data for background sync
-     */
-    function storeFormForSync(form) {
-        const formData = new FormData(form);
-        const data = {
-            url: form.action,
-            method: form.method,
-            data: formData,
-            timestamp: Date.now()
-        };
-        
-        // Store in IndexedDB or localStorage
-        const pendingForms = JSON.parse(localStorage.getItem('niesv_pending_forms') || '[]');
-        pendingForms.push(data);
-        localStorage.setItem('niesv_pending_forms', JSON.stringify(pendingForms));
-        
-        // Register for background sync
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.ready.then(function(registration) {
-                return registration.sync.register('contact-form-sync');
-            });
-        }
-    }
-
-    /**
-     * Sync pending data when back online
-     */
-    function syncPendingData() {
-        const pendingForms = JSON.parse(localStorage.getItem('niesv_pending_forms') || '[]');
-        
-        if (pendingForms.length > 0) {
-            console.log('NIESV PWA: Syncing', pendingForms.length, 'pending forms');
-            
-            pendingForms.forEach(function(formData, index) {
-                // Submit form data
-                fetch(formData.url, {
-                    method: formData.method,
-                    body: formData.data
-                }).then(function(response) {
-                    if (response.ok) {
-                        // Remove from pending list
-                        pendingForms.splice(index, 1);
-                        localStorage.setItem('niesv_pending_forms', JSON.stringify(pendingForms));
-                        showNotification('Form submitted successfully!', 'success');
-                    }
-                }).catch(function(error) {
-                    console.error('NIESV PWA: Failed to sync form:', error);
-                });
-            });
-        }
+        document.addEventListener('submit', function(e) {
+            if (!navigator.onLine) {
+                e.preventDefault();
+                showNotification('You\'re offline. Your form has not been sent - please submit it again when you\'re back online.', 'warning');
+            }
+        });
     }
 
     /**
@@ -447,6 +394,17 @@
      */
     function initServiceWorkerMessaging() {
         if ('serviceWorker' in navigator) {
+            // Tell the worker the saved preference so it never has to ask per request
+            navigator.serviceWorker.ready.then(function(registration) {
+                if (registration.active) {
+                    registration.active.postMessage({
+                        type: 'CACHING_MODE_CHANGED',
+                        mode: getCachingMode()
+                    });
+                }
+            });
+
+
             navigator.serviceWorker.addEventListener('message', function(event) {
                 if (event.data && event.data.type === 'GET_CACHING_PREFERENCE') {
                     // Get user's caching preference from localStorage
