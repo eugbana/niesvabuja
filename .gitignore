@@ -1,0 +1,25 @@
+# Secrets and environment-specific config
+wp-config.php
+.htaccess
+.htaccess.bk
+.lando.local.yml
+
+# Backups and archives (never commit site dumps)
+*.tar.gz
+*.zip
+*.sql
+*.sql.gz
+
+# WordPress core (installed separately; this repo tracks wp-content only)
+/wp-admin/
+/wp-includes/
+/index.php
+/license.txt
+/readme.html
+/wp-*.php
+/xmlrpc.php
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
