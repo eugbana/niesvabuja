@@ -84,7 +84,7 @@ $hero_classes = "hero-section bg-cover bg-center {$size_classes} {$args['custom_
 ?>
 
 <section class="<?php echo esc_attr($hero_classes); ?>"
-         style="background-image: linear-gradient(<?php echo $args['overlay_color']; ?>, <?php echo $args['overlay_color']; ?>), url('<?php echo esc_url($args['background_image']); ?>');">
+         style="background-image: linear-gradient(<?php echo esc_attr($args['overlay_color']); ?>, <?php echo esc_attr($args['overlay_color']); ?>), url('<?php echo esc_url($args['background_image']); ?>');">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="hero-title <?php echo esc_attr($title_classes); ?> font-extrabold tracking-tighter text-white">
             <?php echo esc_html($args['title']); ?>

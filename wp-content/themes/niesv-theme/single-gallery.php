@@ -7,10 +7,6 @@
 
 get_header(); ?>
 
-<?php
-// Debug: Log that this template is being loaded
-error_log('NIESV: single-gallery.php template loaded for post ID: ' . get_the_ID());
-?>
 
 <?php while (have_posts()) : the_post();
     $gallery_images = get_field('gallery_images');

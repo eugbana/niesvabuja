@@ -84,7 +84,7 @@ get_template_part('template-parts/hero-section', null, $hero_args);
                                         <!-- Listing Image -->
                                         <?php if ($image_url) : ?>
                                             <div class="w-full h-48 bg-cover bg-center group-hover:scale-105 transition-transform duration-300 rounded-lg mb-4 overflow-hidden"
-                                                 style="background-image: url('<?php echo $image_url; ?>')">
+                                                 style="background-image: url('<?php echo esc_url($image_url); ?>')">
                                             </div>
                                         <?php endif; ?>
 
@@ -143,7 +143,7 @@ get_template_part('template-parts/hero-section', null, $hero_args);
                                     </span>
                                     <?php if (get_field('news_category')) : ?>
                                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-[var(--secondary-color)] text-[var(--primary-color)]">
-                                            <?php echo get_field('news_category'); ?>
+                                            <?php echo wp_kses_post(get_field('news_category')); ?>
                                         </span>
                                     <?php endif; ?>
                                 </div>
@@ -162,7 +162,7 @@ get_template_part('template-parts/hero-section', null, $hero_args);
 
                                 if ($image_url) : ?>
                                     <div class="w-full h-48 bg-cover bg-center group-hover:scale-105 transition-transform duration-300 rounded-lg mb-4 overflow-hidden"
-                                         style="background-image: url('<?php echo $image_url; ?>')">
+                                         style="background-image: url('<?php echo esc_url($image_url); ?>')">
                                     </div>
                                 <?php endif; ?>
                                 
@@ -220,10 +220,10 @@ get_template_part('template-parts/hero-section', null, $hero_args);
         <section class="py-16 bg-[var(--primary-color)]">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 class="text-3xl font-bold text-white mb-4">
-                    <?php echo get_field('newsletter_title', 'option') ?: 'Stay Updated'; ?>
+                    <?php echo wp_kses_post(get_field('newsletter_title', 'option') ?: 'Stay Updated'); ?>
                 </h2>
                 <p class="text-gray-300 mb-8 max-w-2xl mx-auto">
-                    <?php echo get_field('newsletter_subtitle', 'option') ?: 'Subscribe to our newsletter to receive the latest news and updates directly in your inbox.'; ?>
+                    <?php echo wp_kses_post(get_field('newsletter_subtitle', 'option') ?: 'Subscribe to our newsletter to receive the latest news and updates directly in your inbox.'); ?>
                 </p>
                 <form class="max-w-md mx-auto flex gap-4" action="#" method="post">
                     <input type="email" placeholder="Enter your email" 

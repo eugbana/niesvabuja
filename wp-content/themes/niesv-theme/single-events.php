@@ -62,7 +62,7 @@ get_header(); ?>
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <polyline points="12,6 12,12 16,14"></polyline>
                             </svg>
-                            <?php echo $event_time; ?>
+                            <?php echo wp_kses_post($event_time); ?>
                         </div>
                     <?php endif; ?>
                     
@@ -72,14 +72,14 @@ get_header(); ?>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             </svg>
-                            <?php echo $event_location; ?>
+                            <?php echo wp_kses_post($event_location); ?>
                         </div>
                     <?php endif; ?>
                 </div>
                 
                 <!-- Registration Button -->
                 <?php if ($is_upcoming && $registration_link) : ?>
-                    <a href="<?php echo $registration_link; ?>" 
+                    <a href="<?php echo esc_url($registration_link); ?>" 
                        target="_blank" rel="noopener noreferrer"
                        class="inline-block px-8 py-4 bg-[var(--accent-gold)] text-[var(--primary-color)] rounded-lg text-lg font-bold hover:bg-opacity-90 transition-all shadow-lg">
                         Register Now
@@ -113,8 +113,8 @@ get_header(); ?>
                                     $image = get_sub_field('image');
                                 ?>
                                     <div class="aspect-square bg-cover bg-center rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer" 
-                                         style="background-image: url('<?php echo $image['sizes']['medium']; ?>')"
-                                         onclick="openLightbox('<?php echo $image['sizes']['large']; ?>')">
+                                         style="background-image: url('<?php echo esc_url($image['sizes']['medium']); ?>')"
+                                         onclick="openLightbox('<?php echo esc_js($image['sizes']['large']); ?>')">
                                     </div>
                                 <?php endwhile; ?>
                             </div>
@@ -184,7 +184,7 @@ get_header(); ?>
                                         </svg>
                                         <div>
                                             <p class="font-semibold">Time</p>
-                                            <p class="text-[var(--text-secondary)]"><?php echo $event_time; ?></p>
+                                            <p class="text-[var(--text-secondary)]"><?php echo wp_kses_post($event_time); ?></p>
                                         </div>
                                     </div>
                                 <?php endif; ?>
@@ -197,7 +197,7 @@ get_header(); ?>
                                         </svg>
                                         <div>
                                             <p class="font-semibold">Location</p>
-                                            <p class="text-[var(--text-secondary)]"><?php echo $event_location; ?></p>
+                                            <p class="text-[var(--text-secondary)]"><?php echo wp_kses_post($event_location); ?></p>
                                         </div>
                                     </div>
                                 <?php endif; ?>
@@ -209,7 +209,7 @@ get_header(); ?>
                                         </svg>
                                         <div>
                                             <p class="font-semibold">Organizer</p>
-                                            <p class="text-[var(--text-secondary)]"><?php echo $event_organizer; ?></p>
+                                            <p class="text-[var(--text-secondary)]"><?php echo wp_kses_post($event_organizer); ?></p>
                                         </div>
                                     </div>
                                 <?php endif; ?>
@@ -221,7 +221,7 @@ get_header(); ?>
                                         </svg>
                                         <div>
                                             <p class="font-semibold">Capacity</p>
-                                            <p class="text-[var(--text-secondary)]"><?php echo $event_capacity; ?> attendees</p>
+                                            <p class="text-[var(--text-secondary)]"><?php echo wp_kses_post($event_capacity); ?> attendees</p>
                                         </div>
                                     </div>
                                 <?php endif; ?>
@@ -244,7 +244,7 @@ get_header(); ?>
                             <!-- Registration Button -->
                             <?php if ($is_upcoming && $registration_link) : ?>
                                 <div class="mt-6">
-                                    <a href="<?php echo $registration_link; ?>" 
+                                    <a href="<?php echo esc_url($registration_link); ?>" 
                                        target="_blank" rel="noopener noreferrer"
                                        class="block w-full text-center py-3 px-4 bg-[var(--primary-color)] text-white rounded-md font-semibold hover:bg-opacity-90 transition-all">
                                         Register for Event

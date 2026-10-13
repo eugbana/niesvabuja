@@ -39,8 +39,10 @@ if (!empty($membership_no)) {
     
     if (!empty($member_query)) {
         $member_info = $member_query[0];
-        // Update verification status if not already verified
-        if (!$membership_verified) {
+        // Auto-verify only accounts that have never had a verification decision,
+        // so an admin's "Unverify Membership" is not silently undone here.
+        if (!metadata_exists('user', $current_user->ID, 'membership_verified')
+            && get_field('membership_status', $member_info->ID) === 'active') {
             update_user_meta($current_user->ID, 'membership_verified', true);
             $membership_verified = true;
         }
@@ -48,17 +50,7 @@ if (!empty($membership_no)) {
 }
 
 // Handle property deletion
-if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['property_id'])) {
-    $property_id = intval($_GET['property_id']);
-    $property = get_post($property_id);
-
-    // Check if user owns this property
-    if ($property && $property->post_author == $current_user->ID && $property->post_type === 'properties') {
-        wp_delete_post($property_id, true);
-        wp_redirect(add_query_arg('deleted', '1', remove_query_arg(array('action', 'property_id'))));
-        exit;
-    }
-}
+niesv_handle_property_delete_request();
 
 // Get user's properties
 $user_properties = get_posts(array(
@@ -359,7 +351,7 @@ get_header(); ?>
                                                class="text-[var(--primary-color)] hover:text-opacity-80 mr-3">Edit</a>
                                             <a href="<?php echo get_permalink($property->ID); ?>"
                                                class="text-gray-600 hover:text-gray-900 mr-3" target="_blank">View</a>
-                                            <a href="<?php echo add_query_arg(array('action' => 'delete', 'property_id' => $property->ID)); ?>"
+                                            <a href="<?php echo esc_url(niesv_delete_property_url($property->ID)); ?>"
                                                class="text-red-600 hover:text-red-900"
                                                onclick="return confirm('Are you sure you want to delete this property? This action cannot be undone.')">Delete</a>
                                         </td>
@@ -430,6 +422,13 @@ get_header(); ?>
                     <input type="email" id="edit_email" name="email"
                            value="<?php echo esc_attr($current_user->user_email); ?>"
                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                </div>
+
+                <div class="mb-4">
+                    <label for="edit_current_password" class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                    <input type="password" id="edit_current_password" name="current_password" autocomplete="current-password"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent">
+                    <p class="text-xs text-gray-500 mt-1">Only needed if you change your email address.</p>
                 </div>
 
                 <div class="mb-4">

@@ -53,8 +53,8 @@ get_header(); ?>
                     $image_title = esc_js(get_the_title());
                 ?>
                     <div class="mb-8 h-96 w-full rounded-lg bg-cover bg-center cursor-pointer group transition-all duration-300"
-                         style="background-image: url('<?php echo $featured_image_large; ?>');"
-                         onclick="openNewsLightbox('<?php echo $featured_image_full; ?>', '<?php echo $image_title; ?>')">
+                         style="background-image: url('<?php echo esc_url($featured_image_large); ?>');"
+                         onclick="openNewsLightbox('<?php echo esc_js($featured_image_full); ?>', '<?php echo esc_js($image_title); ?>')">
                         <div class="flex items-center justify-center h-full bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-lg">
                             <svg class="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
@@ -77,8 +77,8 @@ get_header(); ?>
                         ?>
                             <?php if ($index == 0) : ?>
                                 <div class="h-48 w-full rounded-lg bg-cover bg-center cursor-pointer transition-all duration-300 relative group"
-                                     style="background-image: url('<?php echo $image['sizes']['medium_large']; ?>');"
-                                     onclick="openNewsLightbox('<?php echo $image_full; ?>', '<?php echo $image_alt; ?>')">
+                                     style="background-image: url('<?php echo esc_url($image['sizes']['medium_large']); ?>');"
+                                     onclick="openNewsLightbox('<?php echo esc_js($image_full); ?>', '<?php echo esc_js($image_alt); ?>')">
                                     <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-lg flex items-center justify-center">
                                         <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
@@ -87,8 +87,8 @@ get_header(); ?>
                                 </div>
                             <?php elseif ($index == 1) : ?>
                                 <div class="h-48 w-full rounded-lg bg-cover bg-center cursor-pointer transition-all duration-300 relative group"
-                                     style="background-image: url('<?php echo $image['sizes']['medium_large']; ?>');"
-                                     onclick="openNewsLightbox('<?php echo $image_full; ?>', '<?php echo $image_alt; ?>')">
+                                     style="background-image: url('<?php echo esc_url($image['sizes']['medium_large']); ?>');"
+                                     onclick="openNewsLightbox('<?php echo esc_js($image_full); ?>', '<?php echo esc_js($image_alt); ?>')">
                                     <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-lg flex items-center justify-center">
                                         <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
@@ -97,8 +97,8 @@ get_header(); ?>
                                 </div>
                             <?php elseif ($index == 2) : ?>
                                 <div class="col-span-2 h-64 w-full rounded-lg bg-cover bg-center cursor-pointer transition-all duration-300 relative group"
-                                     style="background-image: url('<?php echo $image['sizes']['large']; ?>');"
-                                     onclick="openNewsLightbox('<?php echo $image_full; ?>', '<?php echo $image_alt; ?>')">
+                                     style="background-image: url('<?php echo esc_url($image['sizes']['large']); ?>');"
+                                     onclick="openNewsLightbox('<?php echo esc_js($image_full); ?>', '<?php echo esc_js($image_alt); ?>')">
                                     <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-lg flex items-center justify-center">
                                         <svg class="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
@@ -132,7 +132,7 @@ get_header(); ?>
                     <div class="space-y-4">
                         <div>
                             <h4 class="text-sm font-medium text-gray-500">Author</h4>
-                            <p class="mt-1 text-base font-semibold text-gray-800"><?php echo $article_author; ?></p>
+                            <p class="mt-1 text-base font-semibold text-gray-800"><?php echo wp_kses_post($article_author); ?></p>
                         </div>
                         <div>
                             <h4 class="text-sm font-medium text-gray-500">Published On</h4>

@@ -14,8 +14,15 @@ if (is_user_logged_in()) {
 
 // Handle login form submission
 if (isset($_POST['login_submit'])) {
-    $username = sanitize_text_field($_POST['username']);
-    $password = $_POST['password'];
+    $nonce = isset($_POST['niesv_login_nonce']) ? sanitize_text_field(wp_unslash($_POST['niesv_login_nonce'])) : '';
+    if (!wp_verify_nonce($nonce, 'niesv_login')) {
+        $login_error = 'Your session has expired. Please try again.';
+    }
+}
+
+if (isset($_POST['login_submit']) && empty($login_error)) {
+    $username = sanitize_text_field(wp_unslash($_POST['username'] ?? ''));
+    $password = $_POST['password'] ?? '';
     $remember = isset($_POST['remember']) ? true : false;
     
     $creds = array(
@@ -24,7 +31,7 @@ if (isset($_POST['login_submit'])) {
         'remember'      => $remember
     );
     
-    $user = wp_signon($creds, false);
+    $user = wp_signon($creds, is_ssl());
     
     if (is_wp_error($user)) {
         $login_error = $user->get_error_message();
@@ -53,12 +60,13 @@ get_header(); ?>
             <!-- Error Message -->
             <?php if (isset($login_error)) : ?>
                 <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
-                    <?php echo $login_error; ?>
+                    <?php echo wp_kses_post($login_error); ?>
                 </div>
             <?php endif; ?>
             
             <!-- Login Form -->
             <form method="post" action="">
+                <?php wp_nonce_field('niesv_login', 'niesv_login_nonce'); ?>
                 <div class="space-y-6">
                     <div>
                         <label for="username" class="block text-sm font-medium text-gray-700 mb-2">

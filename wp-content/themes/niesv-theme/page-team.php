@@ -32,11 +32,11 @@ get_template_part('template-parts/hero-section', null, $hero_args);
                 <div class="mb-20">
                     <div class="text-center mb-12">
                         <h2 class="text-3xl font-bold text-[var(--primary-color)] border-b-4 border-[var(--accent-gold)] inline-block pb-2">
-                            <?php echo get_field('leadership_title') ?: 'Leadership Team'; ?>
+                            <?php echo wp_kses_post(get_field('leadership_title') ?: 'Leadership Team'); ?>
                         </h2>
                         <?php if (get_field('leadership_subtitle')) : ?>
                             <p class="mt-4 text-lg text-[var(--text-secondary)]">
-                                <?php echo get_field('leadership_subtitle'); ?>
+                                <?php echo wp_kses_post(get_field('leadership_subtitle')); ?>
                             </p>
                         <?php endif; ?>
                     </div>
@@ -91,7 +91,7 @@ get_template_part('template-parts/hero-section', null, $hero_args);
                                     </h3>
                                     
                                     <p class="text-[var(--accent-gold)] font-semibold text-sm mb-4">
-                                        <?php echo get_field('member_position') ?: 'Member'; ?>
+                                        <?php echo wp_kses_post(get_field('member_position') ?: 'Member'); ?>
                                     </p>
                                     
                                     <?php if (get_field('member_bio')) : ?>
@@ -103,7 +103,7 @@ get_template_part('template-parts/hero-section', null, $hero_args);
                                     <?php if (get_field('member_qualifications')) : ?>
                                         <div class="text-xs text-[var(--text-secondary)] mb-4">
                                             <strong>Qualifications:</strong><br>
-                                            <?php echo get_field('member_qualifications'); ?>
+                                            <?php echo wp_kses_post(get_field('member_qualifications')); ?>
                                         </div>
                                     <?php endif; ?>
                                     
@@ -135,11 +135,11 @@ get_template_part('template-parts/hero-section', null, $hero_args);
             <div class="mb-16">
                 <div class="text-center mb-12">
                     <h2 class="text-3xl font-bold text-[var(--primary-color)] border-b-4 border-[var(--accent-gold)] inline-block pb-2">
-                        <?php echo get_field('members_title') ?: 'Our Members'; ?>
+                        <?php echo wp_kses_post(get_field('members_title') ?: 'Our Members'); ?>
                     </h2>
                     <?php if (get_field('members_subtitle')) : ?>
                         <p class="mt-4 text-lg text-[var(--text-secondary)]">
-                            <?php echo get_field('members_subtitle'); ?>
+                            <?php echo wp_kses_post(get_field('members_subtitle')); ?>
                         </p>
                     <?php endif; ?>
                 </div>
@@ -176,7 +176,7 @@ get_template_part('template-parts/hero-section', null, $hero_args);
                             $member_type = $is_leadership ? 'leadership' : 'regular';
                     ?>
                         <div class="member-card bg-white rounded-xl shadow-md p-4 text-center hover:shadow-lg transition-shadow duration-300" 
-                             data-type="<?php echo $member_type; ?>">
+                             data-type="<?php echo esc_attr($member_type); ?>">
                             
                             <?php
                             $profile_image = get_field('member_profile_image');
@@ -205,7 +205,7 @@ get_template_part('template-parts/hero-section', null, $hero_args);
                             </h4>
                             
                             <p class="text-[var(--accent-gold)] font-medium text-sm mb-2">
-                                <?php echo get_field('member_position') ?: 'Member'; ?>
+                                <?php echo wp_kses_post(get_field('member_position') ?: 'Member'); ?>
                             </p>
                             
                             <?php if (get_field('member_bio')) : ?>
@@ -230,26 +230,26 @@ get_template_part('template-parts/hero-section', null, $hero_args);
             <?php if (get_field('show_join_cta')) : ?>
                 <div class="bg-[var(--primary-color)] rounded-2xl p-8 md:p-12 text-center text-white">
                     <h2 class="text-3xl font-bold mb-4">
-                        <?php echo get_field('join_cta_title') ?: 'Join Our Professional Community'; ?>
+                        <?php echo wp_kses_post(get_field('join_cta_title') ?: 'Join Our Professional Community'); ?>
                     </h2>
                     <?php if (get_field('join_cta_description')) : ?>
                         <p class="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
-                            <?php echo get_field('join_cta_description'); ?>
+                            <?php echo wp_kses_post(get_field('join_cta_description')); ?>
                         </p>
                     <?php endif; ?>
                     
                     <div class="flex flex-col sm:flex-row gap-4 justify-center">
                         <?php if (get_field('join_cta_button_text')) : ?>
-                            <a href="<?php echo get_field('join_cta_button_link') ?: '#'; ?>" 
+                            <a href="<?php echo esc_url(get_field('join_cta_button_link') ?: '#'); ?>" 
                                class="bg-[var(--accent-gold)] text-[var(--primary-color)] px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-300">
-                                <?php echo get_field('join_cta_button_text'); ?>
+                                <?php echo wp_kses_post(get_field('join_cta_button_text')); ?>
                             </a>
                         <?php endif; ?>
                         
                         <?php if (get_field('join_cta_secondary_button_text')) : ?>
-                            <a href="<?php echo get_field('join_cta_secondary_button_link') ?: '#'; ?>" 
+                            <a href="<?php echo esc_url(get_field('join_cta_secondary_button_link') ?: '#'); ?>" 
                                class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-[var(--primary-color)] transition-all duration-300">
-                                <?php echo get_field('join_cta_secondary_button_text'); ?>
+                                <?php echo wp_kses_post(get_field('join_cta_secondary_button_text')); ?>
                             </a>
                         <?php endif; ?>
                     </div>

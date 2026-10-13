@@ -15,10 +15,10 @@ get_header(); ?>
         <div class="bg-[var(--secondary-color)]">
             <div class="container mx-auto px-6 py-16 text-center">
                 <h1 class="text-5xl font-extrabold tracking-tight text-[var(--text-primary)]">
-                    <?php echo get_field('contact_hero_title') ?: 'Get in Touch'; ?>
+                    <?php echo wp_kses_post(get_field('contact_hero_title') ?: 'Get in Touch'); ?>
                 </h1>
                 <p class="mx-auto mt-4 max-w-2xl text-lg text-[var(--text-secondary)]">
-                    <?php echo get_field('contact_hero_subtitle') ?: "We'd love to hear from you. Whether you have a question about our services, membership, or anything else, our team is ready to answer all your questions."; ?>
+                    <?php echo wp_kses_post(get_field('contact_hero_subtitle') ?: "We'd love to hear from you. Whether you have a question about our services, membership, or anything else, our team is ready to answer all your questions."); ?>
                 </p>
             </div>
         </div>
@@ -29,10 +29,10 @@ get_header(); ?>
                 <!-- Contact Information -->
                 <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                     <h2 class="text-3xl font-bold tracking-tight text-[var(--text-primary)]">
-                        <?php echo get_field('contact_info_title') ?: 'Contact Information'; ?>
+                        <?php echo wp_kses_post(get_field('contact_info_title') ?: 'Contact Information'); ?>
                     </h2>
                     <p class="mt-3 text-lg text-[var(--text-secondary)]">
-                        <?php echo get_field('contact_info_subtitle') ?: 'Our office is open from 9am to 5pm, Monday to Friday.'; ?>
+                        <?php echo wp_kses_post(get_field('contact_info_subtitle') ?: 'Our office is open from 9am to 5pm, Monday to Friday.'); ?>
                     </p>
                     
                     <div class="mt-8 space-y-6">
@@ -46,7 +46,7 @@ get_header(); ?>
                                 </svg>
                                 <div>
                                     <h3 class="text-lg font-semibold">Address</h3>
-                                    <p class="text-[var(--text-secondary)]"><?php echo get_field('office_address'); ?></p>
+                                    <p class="text-[var(--text-secondary)]"><?php echo wp_kses_post(get_field('office_address')); ?></p>
                                 </div>
                             </div>
                         <?php endif; ?>
@@ -108,7 +108,7 @@ get_header(); ?>
                                 </svg>
                                 <div>
                                     <h3 class="text-lg font-semibold">Office Hours</h3>
-                                    <div class="text-[var(--text-secondary)]"><?php echo get_field('office_hours'); ?></div>
+                                    <div class="text-[var(--text-secondary)]"><?php echo wp_kses_post(get_field('office_hours')); ?></div>
                                 </div>
                             </div>
                         <?php endif; ?>
@@ -150,10 +150,10 @@ get_header(); ?>
                 <!-- Contact Form -->
                 <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                     <h2 class="text-3xl font-bold tracking-tight text-[var(--text-primary)]">
-                        <?php echo get_field('contact_form_title') ?: 'Send us a Message'; ?>
+                        <?php echo wp_kses_post(get_field('contact_form_title') ?: 'Send us a Message'); ?>
                     </h2>
                     <p class="mt-3 text-lg text-[var(--text-secondary)]">
-                        <?php echo get_field('contact_form_subtitle') ?: 'Fill out the form below and we will get back to you as soon as possible.'; ?>
+                        <?php echo wp_kses_post(get_field('contact_form_subtitle') ?: 'Fill out the form below and we will get back to you as soon as possible.'); ?>
                     </p>
                     
                     <form class="mt-8 space-y-6" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
@@ -211,12 +211,12 @@ get_header(); ?>
             <?php if (get_field('show_map_section')) : ?>
                 <div class="mt-16">
                     <h2 class="text-3xl font-bold tracking-tight text-[var(--primary-color)] text-center mb-8">
-                        <?php echo get_field('map_section_title') ?: 'Find Us'; ?>
+                        <?php echo wp_kses_post(get_field('map_section_title') ?: 'Find Us'); ?>
                     </h2>
                     
                     <?php if (get_field('google_maps_embed')) : ?>
                         <div class="rounded-lg overflow-hidden shadow-lg">
-                            <?php echo get_field('google_maps_embed'); ?>
+                            <?php echo niesv_kses_embed(get_field('google_maps_embed')); ?>
                         </div>
                     <?php else : ?>
                         <div class="bg-gray-200 rounded-lg h-96 flex items-center justify-center">

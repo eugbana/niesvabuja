@@ -1,6 +1,6 @@
 /**
  * NIESV PWA Service Worker
- * Handles caching, offline functionality, and background sync
+ * Handles caching, offline functionality and notifications
  */
 
 // Get the WordPress site URL from the current location
@@ -22,7 +22,9 @@ const getEnvironmentCacheName = () => {
         environment = 'development';
     }
 
-    return `niesv-pwa-${environment}-v1.0.0`;
+    // NIESV_CACHE_VERSION is prepended by WordPress when it serves /sw.js
+    const version = typeof NIESV_CACHE_VERSION !== 'undefined' ? NIESV_CACHE_VERSION : 'v1';
+    return `niesv-pwa-${environment}-${version}`;
 };
 
 const CACHE_NAME = getEnvironmentCacheName();
@@ -49,8 +51,7 @@ const RUNTIME_CACHE_PATTERNS = [
     /\/wp-content\/uploads\/.+\.(png|jpg|jpeg|gif|svg|webp)$/,
     // External fonts and CDN resources
     /^https:\/\/fonts\.googleapis\.com\/.*/,
-    /^https:\/\/fonts\.gstatic\.com\/.*/,
-    /^https:\/\/cdn\.tailwindcss\.com\/.*/
+    /^https:\/\/fonts\.gstatic\.com\/.*/
 ];
 
 // Install event - cache static assets
@@ -170,6 +171,25 @@ async function handleFetch(request, event) {
     }
 }
 
+// Pages with a member's personal data. Never stored, so nothing is readable
+// offline on a shared device after logging out.
+const PRIVATE_PATHS = ['/member-dashboard/', '/property-dashboard/', '/add-property/', '/edit-property/', '/login/', '/register/', '/pwa-test/'];
+
+/**
+ * Whether a network response may be stored in the cache
+ */
+function shouldCache(request, response) {
+    if (!response.ok) {
+        return false;
+    }
+    const path = new URL(request.url).pathname;
+    if (PRIVATE_PATHS.some(privatePath => path.startsWith(privatePath))) {
+        return false;
+    }
+    const cacheControl = response.headers.get('Cache-Control') || '';
+    return !/no-store|private/i.test(cacheControl);
+}
+
 /**
  * Cache First strategy - good for static assets
  */
@@ -180,7 +200,7 @@ async function cacheFirst(request) {
     }
     
     const networkResponse = await fetch(request);
-    if (networkResponse.ok) {
+    if (shouldCache(request, networkResponse)) {
         const cache = await caches.open(CACHE_NAME);
         cache.put(request, networkResponse.clone());
     }
@@ -194,7 +214,7 @@ async function cacheFirst(request) {
 async function networkFirst(request) {
     try {
         const networkResponse = await fetch(request);
-        if (networkResponse.ok) {
+        if (shouldCache(request, networkResponse)) {
             const cache = await caches.open(CACHE_NAME);
             cache.put(request, networkResponse.clone());
         }
@@ -215,7 +235,7 @@ async function staleWhileRevalidate(request) {
     const cachedResponse = await caches.match(request);
     
     const fetchPromise = fetch(request).then(networkResponse => {
-        if (networkResponse.ok) {
+        if (shouldCache(request, networkResponse)) {
             const cache = caches.open(CACHE_NAME);
             cache.then(c => c.put(request, networkResponse.clone()));
         }
@@ -226,47 +246,36 @@ async function staleWhileRevalidate(request) {
 }
 
 /**
- * Get user's caching preference
+ * User's caching preference ('minimal' or 'full').
+ *
+ * Pages send it on load and when it changes (CACHING_MODE_CHANGED). It is kept in
+ * memory and persisted in Cache Storage, because the browser stops idle workers.
+ * Reading it never waits on a page, so it adds no delay to requests.
  */
+const PREFERENCE_CACHE = 'niesv-settings'; // outside the 'niesv-pwa-' prefix that activate() cleans up
+const PREFERENCE_KEY = '/__niesv-caching-mode';
+let cachingModeMemo = null;
+
 async function getCachingPreference() {
-    try {
-        // Try to get preference from clients
-        const clients = await self.clients.matchAll({
-            type: 'window',
-            includeUncontrolled: true
-        });
-
-        for (const client of clients) {
-            try {
-                const response = await new Promise((resolve) => {
-                    const messageChannel = new MessageChannel();
-                    messageChannel.port1.onmessage = (event) => {
-                        resolve(event.data);
-                    };
-
-                    client.postMessage({
-                        type: 'GET_CACHING_PREFERENCE'
-                    }, [messageChannel.port2]);
-
-                    // Timeout after 100ms
-                    setTimeout(() => resolve({ preference: 'minimal' }), 100);
-                });
-
-                if (response.preference) {
-                    return response.preference;
-                }
-            } catch (error) {
-                // Continue to next client
-            }
-        }
-
-        // Default to minimal caching for better browser experience
-        return 'minimal';
-
-    } catch (error) {
-        console.log('NIESV SW: Could not get caching preference, defaulting to minimal');
-        return 'minimal';
+    if (cachingModeMemo) {
+        return cachingModeMemo;
     }
+    try {
+        const stored = await caches.match(PREFERENCE_KEY, { cacheName: PREFERENCE_CACHE });
+        cachingModeMemo = stored ? await stored.text() : 'minimal';
+    } catch (error) {
+        cachingModeMemo = 'minimal';
+    }
+    return cachingModeMemo;
+}
+
+async function setCachingPreference(mode) {
+    if (mode !== 'minimal' && mode !== 'full') {
+        return;
+    }
+    cachingModeMemo = mode;
+    const cache = await caches.open(PREFERENCE_CACHE);
+    await cache.put(PREFERENCE_KEY, new Response(mode));
 }
 
 /**
@@ -278,7 +287,7 @@ async function networkFirstMinimal(request) {
         const networkResponse = await fetch(request);
 
         // Only cache critical resources for regular browsers
-        if (networkResponse.ok && isCriticalResource(request)) {
+        if (isCriticalResource(request) && shouldCache(request, networkResponse)) {
             const cache = await caches.open(CACHE_NAME);
             cache.put(request, networkResponse.clone());
         }
@@ -333,60 +342,6 @@ function isAPICall(request) {
            request.url.includes('/api/');
 }
 
-// Background sync for form submissions
-self.addEventListener('sync', event => {
-    console.log('NIESV SW: Background sync triggered:', event.tag);
-    
-    if (event.tag === 'contact-form-sync') {
-        event.waitUntil(syncContactForms());
-    }
-    
-    if (event.tag === 'property-form-sync') {
-        event.waitUntil(syncPropertyForms());
-    }
-});
-
-/**
- * Sync contact form submissions
- */
-async function syncContactForms() {
-    try {
-        // Get pending form submissions from IndexedDB
-        const pendingForms = await getPendingContactForms();
-        
-        for (const form of pendingForms) {
-            try {
-                const response = await fetch('/wp-admin/admin-ajax.php', {
-                    method: 'POST',
-                    body: form.data
-                });
-                
-                if (response.ok) {
-                    await removePendingContactForm(form.id);
-                    console.log('NIESV SW: Contact form synced successfully');
-                }
-            } catch (error) {
-                console.error('NIESV SW: Failed to sync contact form:', error);
-            }
-        }
-    } catch (error) {
-        console.error('NIESV SW: Background sync failed:', error);
-    }
-}
-
-/**
- * Sync property form submissions
- */
-async function syncPropertyForms() {
-    try {
-        // Similar implementation for property forms
-        console.log('NIESV SW: Property form sync not implemented yet');
-    } catch (error) {
-        console.error('NIESV SW: Property form sync failed:', error);
-    }
-}
-
-// Push notification handling
 self.addEventListener('push', event => {
     console.log('NIESV SW: Push notification received');
     
@@ -446,17 +401,6 @@ self.addEventListener('notificationclick', event => {
 });
 
 // Helper functions for IndexedDB operations (simplified)
-async function getPendingContactForms() {
-    // Implementation would use IndexedDB to store/retrieve pending forms
-    return [];
-}
-
-async function removePendingContactForm(id) {
-    // Implementation would remove form from IndexedDB
-    console.log('Removing pending form:', id);
-}
-
-// Message handling for communication with main thread
 self.addEventListener('message', event => {
     console.log('NIESV SW: Message received:', event.data);
     
@@ -464,6 +408,10 @@ self.addEventListener('message', event => {
         self.skipWaiting();
     }
     
+    if (event.data && event.data.type === 'CACHING_MODE_CHANGED') {
+        event.waitUntil(setCachingPreference(event.data.mode));
+    }
+
     if (event.data && event.data.type === 'GET_VERSION') {
         event.ports[0].postMessage({ version: CACHE_NAME });
     }

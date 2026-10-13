@@ -50,54 +50,44 @@ function niesv_theme_setup() {
 add_action('after_setup_theme', 'niesv_theme_setup');
 
 /**
+ * Version string for a theme asset, from its modification time, so browsers
+ * fetch the new file after every deploy (assets are cached for a year).
+ */
+function niesv_asset_version($relative_path) {
+    $file = get_template_directory() . '/' . ltrim($relative_path, '/');
+    return file_exists($file) ? (string) filemtime($file) : wp_get_theme()->get('Version');
+}
+
+/**
+ * Cache version for the service worker: changes whenever a precached asset changes.
+ */
+function niesv_pwa_cache_version() {
+    return substr(md5(implode('|', array_map('niesv_asset_version', array('style.css', 'assets/css/tailwind.css', 'assets/js/theme.js', 'assets/js/pwa.js', 'sw.js')))), 0, 10);
+}
+
+/**
  * Enqueue Scripts and Styles
  */
 function niesv_theme_scripts() {
-    // Note: Using system fonts now, no need for Google Fonts
-    // System font stack is defined in CSS variables for better performance
-
-    // Enqueue Tailwind CSS from CDN
-    wp_enqueue_style('niesv-tailwind',
-        'https://cdn.tailwindcss.com?plugins=forms,container-queries',
-        array(),
-        '3.4.0'
-    );
-
-    // Enqueue theme stylesheet AFTER Tailwind
     wp_enqueue_style('niesv-style',
         get_stylesheet_uri(),
-        array('niesv-tailwind'),
-        wp_get_theme()->get('Version')
+        array(),
+        niesv_asset_version('style.css')
     );
 
-    // Add inline CSS for Tailwind configuration
-    $tailwind_config = "
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'niesv-primary': 'rgba(0, 0, 40, 1)',
-                        'niesv-secondary': '#e7edf4',
-                        'niesv-text-primary': '#0d141c',
-                        'niesv-text-secondary': '#49739c',
-                        'niesv-background': '#f8fafc',
-                        'niesv-accent-gold': '#d4af37'
-                    },
-                    fontFamily: {
-                        'newsreader': ['Newsreader', 'serif'],
-                        'noto-sans': ['Noto Sans', 'sans-serif']
-                    }
-                }
-            }
-        }
-    ";
-    wp_add_inline_script('niesv-tailwind', $tailwind_config, 'before');
+    // Tailwind, prebuilt by `npm run build` (see tailwind.config.js). Loaded after
+    // style.css so utilities win ties, as they did with the old in-browser CDN build.
+    wp_enqueue_style('niesv-tailwind',
+        get_template_directory_uri() . '/assets/css/tailwind.css',
+        array('niesv-style'),
+        niesv_asset_version('assets/css/tailwind.css')
+    );
 
     // Enqueue theme JavaScript
     wp_enqueue_script('niesv-script',
         get_template_directory_uri() . '/assets/js/theme.js',
         array('jquery'),
-        wp_get_theme()->get('Version'),
+        niesv_asset_version('assets/js/theme.js'),
         true
     );
 
@@ -105,7 +95,7 @@ function niesv_theme_scripts() {
     wp_enqueue_script('niesv-pwa-script',
         get_template_directory_uri() . '/assets/js/pwa.js',
         array(),
-        wp_get_theme()->get('Version'),
+        niesv_asset_version('assets/js/pwa.js'),
         true
     );
 
@@ -122,7 +112,7 @@ function niesv_theme_scripts() {
         'theme_url' => get_template_directory_uri(),
         'home_url' => home_url('/'),
         'offline_url' => home_url('/offline/'),
-        'cache_version' => wp_get_theme()->get('Version')
+        'cache_version' => niesv_pwa_cache_version()
     ));
 }
 add_action('wp_enqueue_scripts', 'niesv_theme_scripts');
@@ -132,7 +122,7 @@ add_action('wp_enqueue_scripts', 'niesv_theme_scripts');
  */
 function niesv_admin_scripts($hook) {
     if ('post.php' == $hook || 'post-new.php' == $hook) {
-        wp_enqueue_script('niesv-admin-script', get_template_directory_uri() . '/js/admin.js', array('jquery'), '1.0.0', true);
+        wp_enqueue_script('niesv-admin-script', get_template_directory_uri() . '/js/admin.js', array('jquery'), niesv_asset_version('js/admin.js'), true);
     }
 }
 add_action('admin_enqueue_scripts', 'niesv_admin_scripts');
@@ -319,47 +309,18 @@ function niesv_flush_rewrite_rules() {
 add_action('after_switch_theme', 'niesv_flush_rewrite_rules');
 
 /**
- * Debug template loading for gallery posts
+ * Flush rewrite rules once after the theme's post types/rewrites change.
+ * Bump NIESV_REWRITE_VERSION whenever register_post_type() slugs change.
  */
-function niesv_debug_template_loading($template) {
-    global $wp_query;
+const NIESV_REWRITE_VERSION = '1';
 
-    if (is_singular('gallery')) {
-        error_log('NIESV: Loading gallery single template: ' . $template);
-        error_log('NIESV: Post ID: ' . get_the_ID());
-        error_log('NIESV: Post type: ' . get_post_type());
-    }
-
-    if (is_post_type_archive('gallery')) {
-        error_log('NIESV: Loading gallery archive template: ' . $template);
-    }
-
-    return $template;
-}
-add_filter('template_include', 'niesv_debug_template_loading');
-
-/**
- * Force rewrite rules flush when needed
- */
-function niesv_check_rewrite_rules() {
-    $rules = get_option('rewrite_rules');
-    $gallery_rule_exists = false;
-
-    if ($rules) {
-        foreach ($rules as $pattern => $replacement) {
-            if (strpos($pattern, 'gallery') !== false && strpos($replacement, 'gallery') !== false) {
-                $gallery_rule_exists = true;
-                break;
-            }
-        }
-    }
-
-    if (!$gallery_rule_exists) {
+function niesv_maybe_flush_rewrite_rules() {
+    if (get_option('niesv_rewrite_version') !== NIESV_REWRITE_VERSION) {
         flush_rewrite_rules();
-        error_log('NIESV: Rewrite rules flushed due to missing gallery rules');
+        update_option('niesv_rewrite_version', NIESV_REWRITE_VERSION);
     }
 }
-add_action('wp_loaded', 'niesv_check_rewrite_rules');
+add_action('wp_loaded', 'niesv_maybe_flush_rewrite_rules');
 
 /**
  * Ensure gallery post type query vars are recognized
@@ -373,12 +334,19 @@ add_filter('query_vars', 'niesv_add_gallery_query_vars');
 /**
  * Add ACF Options Page
  */
-if (function_exists('acf_add_options_page')) {
+function niesv_register_options_pages() {
+    if (!function_exists('acf_add_options_page')) {
+        return;
+    }
+
     acf_add_options_page(array(
         'page_title' => 'Theme General Settings',
         'menu_title' => 'Theme Options',
         'menu_slug' => 'general-settings',
         'capability' => 'edit_posts',
+        // Field groups are attached to this page, so it must be a real page
+        // rather than ACF's default redirect to the first sub page.
+        'redirect' => false,
         'icon_url' => 'dashicons-admin-customizer',
     ));
 
@@ -400,6 +368,7 @@ if (function_exists('acf_add_options_page')) {
         'parent_slug' => 'general-settings',
     ));
 }
+add_action('acf/init', 'niesv_register_options_pages');
 
 /**
  * Custom Image Sizes
@@ -4040,8 +4009,6 @@ function niesv_register_acf_blocks() {
     // Check if function exists
     if (function_exists('acf_register_block_type')) {
 
-        // Debug: Log that blocks are being registered
-        error_log('NIESV: Registering ACF blocks');
 
         // Hero Section Block
         acf_register_block_type(array(
@@ -4068,8 +4035,6 @@ function niesv_register_acf_blocks() {
             ),
         ));
 
-        // Debug: Log hero block registration
-        error_log('NIESV: Hero Section block registered');
 
         // News Cards Block
         acf_register_block_type(array(
@@ -4317,7 +4282,7 @@ function niesv_block_editor_styles() {
         'niesv-block-editor-styles',
         get_template_directory_uri() . '/assets/css/block-editor.css',
         array(),
-        wp_get_theme()->get('Version')
+        niesv_asset_version('assets/css/block-editor.css')
     );
 }
 add_action('enqueue_block_editor_assets', 'niesv_block_editor_styles');
@@ -4423,17 +4388,17 @@ function niesv_dashboard_widget_content() {
  */
 function niesv_handle_contact_form() {
     // Verify nonce
-    if (!wp_verify_nonce($_POST['niesv_contact_nonce'], 'niesv_contact_form')) {
+    if (!wp_verify_nonce($_POST['niesv_contact_nonce'] ?? '', 'niesv_contact_form')) {
         wp_die('Security check failed');
     }
 
     // Sanitize form data
-    $first_name = sanitize_text_field($_POST['first_name']);
-    $last_name = sanitize_text_field($_POST['last_name']);
-    $email = sanitize_email($_POST['email']);
-    $phone = sanitize_text_field($_POST['phone']);
-    $subject = sanitize_text_field($_POST['subject']);
-    $message = sanitize_textarea_field($_POST['message']);
+    $first_name = sanitize_text_field(wp_unslash($_POST['first_name'] ?? ''));
+    $last_name = sanitize_text_field(wp_unslash($_POST['last_name'] ?? ''));
+    $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
+    $phone = sanitize_text_field(wp_unslash($_POST['phone'] ?? ''));
+    $subject = sanitize_text_field(wp_unslash($_POST['subject'] ?? ''));
+    $message = sanitize_textarea_field(wp_unslash($_POST['message'] ?? ''));
 
     // Validate required fields
     if (empty($first_name) || empty($last_name) || empty($email) || empty($subject) || empty($message)) {
@@ -4475,6 +4440,31 @@ function niesv_handle_contact_form() {
 }
 add_action('admin_post_niesv_contact_form', 'niesv_handle_contact_form');
 add_action('admin_post_nopriv_niesv_contact_form', 'niesv_handle_contact_form');
+
+/**
+ * Never page-cache pages whose forms carry a nonce. A cached copy keeps serving a
+ * nonce that expires after a day (LiteSpeed caches public pages for a week), and
+ * the form then fails with "Security check failed" / "session expired".
+ */
+function niesv_nocache_form_pages() {
+    if (is_page(array('register', 'login', 'contact'))) {
+        do_action('litespeed_control_set_nocache', 'NIESV: page form uses a nonce');
+        nocache_headers();
+    }
+}
+add_action('template_redirect', 'niesv_nocache_form_pages');
+
+/**
+ * Sanitize a map embed field: allows only an <iframe> with the usual embed attributes.
+ */
+function niesv_kses_embed($html) {
+    return wp_kses($html, array(
+        'iframe' => array(
+            'src' => true, 'width' => true, 'height' => true, 'style' => true, 'title' => true,
+            'allowfullscreen' => true, 'loading' => true, 'referrerpolicy' => true, 'frameborder' => true,
+        ),
+    ));
+}
 
 /**
  * Display contact form messages
@@ -4713,21 +4703,25 @@ function niesv_create_auth_pages() {
         }
     }
 }
-add_action('after_setup_theme', 'niesv_create_auth_pages');
+add_action('after_switch_theme', 'niesv_create_auth_pages');
 
-// Allow subscribers to create properties
-function niesv_allow_subscribers_to_create_properties() {
+// Remove the capabilities an older version granted to subscribers. Property access
+// is enforced by niesv_user_has_property_access() in the front-end handlers, and
+// upload_files exposed the wp-admin media uploader to every subscriber.
+// Checks the in-memory role each request and only writes when a stray cap is found.
+function niesv_remove_legacy_subscriber_caps() {
     $subscriber = get_role('subscriber');
-    if ($subscriber) {
-        $subscriber->add_cap('edit_properties');
-        $subscriber->add_cap('edit_published_properties');
-        $subscriber->add_cap('publish_properties');
-        $subscriber->add_cap('delete_properties');
-        $subscriber->add_cap('delete_published_properties');
-        $subscriber->add_cap('upload_files');
+    if (!$subscriber) {
+        return;
+    }
+
+    foreach (array('edit_properties', 'edit_published_properties', 'publish_properties', 'delete_properties', 'delete_published_properties', 'upload_files') as $cap) {
+        if ($subscriber->has_cap($cap)) {
+            $subscriber->remove_cap($cap);
+        }
     }
 }
-add_action('init', 'niesv_allow_subscribers_to_create_properties');
+add_action('init', 'niesv_remove_legacy_subscriber_caps');
 
 // Register Member Area custom post type
 function niesv_register_member_area_post_type() {
@@ -5064,23 +5058,45 @@ function niesv_user_has_property_access($user_id = null) {
         return false;
     }
 
+    if (user_can($user_id, 'manage_options')) {
+        return true;
+    }
+
     // Check if user is verified member
     $membership_verified = get_user_meta($user_id, 'membership_verified', true);
 
     return $membership_verified === true || $membership_verified === '1';
 }
 
-// Restrict property creation to verified members
-function niesv_restrict_property_creation($caps, $cap, $user_id, $args) {
-    if ($cap === 'edit_properties' || $cap === 'publish_properties') {
-        if (!niesv_user_has_property_access($user_id)) {
-            return array('do_not_allow');
-        }
+// Nonce-protected link for deleting a property from the front-end dashboards
+function niesv_delete_property_url($property_id) {
+    return wp_nonce_url(
+        add_query_arg(array('action' => 'delete', 'property_id' => $property_id)),
+        'niesv_delete_property_' . $property_id
+    );
+}
+
+// Handle a delete request from a front-end dashboard; redirects on success
+function niesv_handle_property_delete_request() {
+    if (!isset($_GET['action'], $_GET['property_id']) || $_GET['action'] !== 'delete') {
+        return;
     }
 
-    return $caps;
+    $property_id = absint($_GET['property_id']);
+    $property = get_post($property_id);
+    $nonce = isset($_GET['_wpnonce']) ? sanitize_text_field(wp_unslash($_GET['_wpnonce'])) : '';
+
+    if (!wp_verify_nonce($nonce, 'niesv_delete_property_' . $property_id)
+        || !$property || $property->post_type !== 'properties'
+        || (int) $property->post_author !== get_current_user_id()
+        || !niesv_user_has_property_access()) {
+        return;
+    }
+
+    wp_delete_post($property_id, true);
+    wp_redirect(add_query_arg('deleted', '1', remove_query_arg(array('action', 'property_id', '_wpnonce'))));
+    exit;
 }
-add_filter('user_has_cap', 'niesv_restrict_property_creation', 10, 4);
 
 // Add membership verification status to user profile
 function niesv_add_membership_fields_to_profile($user) {
@@ -5147,7 +5163,7 @@ function niesv_save_membership_fields_from_profile($user_id) {
     }
 
     if (isset($_POST['membership_no'])) {
-        update_user_meta($user_id, 'membership_no', sanitize_text_field($_POST['membership_no']));
+        update_user_meta($user_id, 'membership_no', sanitize_text_field(wp_unslash($_POST['membership_no'] ?? '')));
     }
 
     if (isset($_POST['membership_verified'])) {
@@ -5155,11 +5171,11 @@ function niesv_save_membership_fields_from_profile($user_id) {
     }
 
     if (isset($_POST['member_category'])) {
-        update_user_meta($user_id, 'member_category', sanitize_text_field($_POST['member_category']));
+        update_user_meta($user_id, 'member_category', sanitize_text_field(wp_unslash($_POST['member_category'] ?? '')));
     }
 
     if (isset($_POST['member_branch'])) {
-        update_user_meta($user_id, 'member_branch', sanitize_text_field($_POST['member_branch']));
+        update_user_meta($user_id, 'member_branch', sanitize_text_field(wp_unslash($_POST['member_branch'] ?? '')));
     }
 }
 add_action('personal_options_update', 'niesv_save_membership_fields_from_profile');
@@ -5292,7 +5308,7 @@ add_action('admin_notices', 'niesv_show_bulk_action_notices');
 // Handle profile update AJAX request
 function niesv_handle_profile_update() {
     // Check nonce
-    if (!wp_verify_nonce($_POST['profile_nonce'], 'niesv_update_profile')) {
+    if (!wp_verify_nonce($_POST['profile_nonce'] ?? '', 'niesv_update_profile')) {
         wp_send_json_error('Security check failed');
     }
 
@@ -5305,11 +5321,11 @@ function niesv_handle_profile_update() {
     $user_id = $current_user->ID;
 
     // Sanitize input data
-    $first_name = sanitize_text_field($_POST['first_name']);
-    $last_name = sanitize_text_field($_POST['last_name']);
-    $email = sanitize_email($_POST['email']);
-    $phone = sanitize_text_field($_POST['phone']);
-    $bio = sanitize_textarea_field($_POST['bio']);
+    $first_name = sanitize_text_field(wp_unslash($_POST['first_name'] ?? ''));
+    $last_name = sanitize_text_field(wp_unslash($_POST['last_name'] ?? ''));
+    $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
+    $phone = sanitize_text_field(wp_unslash($_POST['phone'] ?? ''));
+    $bio = sanitize_textarea_field(wp_unslash($_POST['bio'] ?? ''));
 
     // Validate email
     if (!is_email($email)) {
@@ -5317,7 +5333,14 @@ function niesv_handle_profile_update() {
     }
 
     // Check if email is already in use by another user
-    if ($email !== $current_user->user_email) {
+    if (strtolower($email) !== strtolower($current_user->user_email)) {
+        // The account email controls password resets, so changing it needs the current password
+        // Not unslashed: core hashes and checks passwords in their slashed $_POST form
+        $current_password = isset($_POST['current_password']) ? $_POST['current_password'] : '';
+        if ($current_password === '' || !wp_check_password($current_password, $current_user->user_pass, $user_id)) {
+            wp_send_json_error('Please enter your current password to change your email address');
+        }
+
         $existing_user = get_user_by('email', $email);
         if ($existing_user && $existing_user->ID !== $user_id) {
             wp_send_json_error('This email address is already in use');
@@ -5376,7 +5399,7 @@ function niesv_create_member_pages() {
         }
     }
 }
-add_action('after_setup_theme', 'niesv_create_member_pages');
+add_action('after_switch_theme', 'niesv_create_member_pages');
 
 /**
  * Create default menus on theme activation
@@ -5970,55 +5993,6 @@ function niesv_pagination($query = null, $screen_reader_text = 'Page navigation'
 }
 
 /**
- * Ensure Tailwind CSS is loaded properly
- */
-function niesv_add_tailwind_config() {
-    if (!is_admin()) {
-        ?>
-        <script>
-            // Ensure Tailwind is loaded
-            if (typeof tailwind !== 'undefined') {
-                console.log('NIESV: Tailwind CSS loaded successfully');
-            } else {
-                console.warn('NIESV: Tailwind CSS not loaded');
-            }
-        </script>
-        <?php
-    }
-}
-add_action('wp_footer', 'niesv_add_tailwind_config');
-
-/**
- * Debug function to check if blocks are being processed
- */
-function niesv_debug_blocks($content) {
-    if (has_blocks($content)) {
-        error_log('NIESV: Page has blocks');
-        $blocks = parse_blocks($content);
-        foreach ($blocks as $block) {
-            error_log('NIESV: Block found - ' . $block['blockName']);
-        }
-    } else {
-        error_log('NIESV: No blocks found in content');
-    }
-    return $content;
-}
-add_filter('the_content', 'niesv_debug_blocks', 5);
-
-/**
- * Ensure blocks are rendered properly
- */
-function niesv_ensure_block_rendering() {
-    // Make sure block rendering is enabled
-    if (!function_exists('do_blocks')) {
-        error_log('NIESV: do_blocks function not available');
-    } else {
-        error_log('NIESV: Block rendering is available');
-    }
-}
-add_action('init', 'niesv_ensure_block_rendering');
-
-/**
  * PWA Functionality
  */
 
@@ -6037,50 +6011,39 @@ function niesv_pwa_support() {
 add_action('after_setup_theme', 'niesv_pwa_support');
 
 /**
- * Generate proper robots.txt content - OVERRIDE WordPress privacy settings for social media
+ * robots.txt
+ *
+ * Honours Settings > Reading > "Discourage search engines": when it is ticked the
+ * whole site is disallowed for search engines (staging copies stay out of Google),
+ * but link-preview crawlers can still fetch pages so shared links show a card.
+ * Theme CSS/JS and versioned assets (?ver=) stay crawlable so Google can render pages.
  */
 function niesv_robots_txt($output, $public) {
-    // ALWAYS allow social media crawlers regardless of WordPress privacy settings
-    // This is crucial for social media sharing to work properly
+    $preview_bots = array('facebookexternalhit', 'Twitterbot', 'LinkedInBot', 'WhatsApp');
 
-    $output = "User-agent: *\n";
-    $output .= "Allow: /\n";
+    $output = '';
+    foreach ($preview_bots as $bot) {
+        $output .= "User-agent: {$bot}\nAllow: /\n\n";
+    }
+
+    $output .= "User-agent: *\n";
+    if (!$public) {
+        return $output . "Disallow: /\n";
+    }
+
     $output .= "Disallow: /wp-admin/\n";
-    $output .= "Disallow: /wp-includes/\n";
-    $output .= "Disallow: /wp-content/plugins/\n";
-    $output .= "Disallow: /wp-content/themes/\n";
-    $output .= "Disallow: /wp-content/uploads/ai1wm-backups/\n";
+    $output .= "Allow: /wp-admin/admin-ajax.php\n";
+    $output .= "Disallow: /wp-content/ai1wm-backups/\n";
     $output .= "Disallow: /readme.html\n";
     $output .= "Disallow: /license.txt\n";
-    $output .= "Disallow: /*?*\n"; // Block query parameters
+    $output .= "Disallow: /?s=\n";
     $output .= "Disallow: /search/\n";
     $output .= "Disallow: /author/\n";
-    $output .= "Disallow: /tag/\n";
-    $output .= "\n";
 
-    // Explicitly allow social media crawlers
-    $output .= "User-agent: facebookexternalhit/1.1\n";
-    $output .= "Allow: /\n";
-    $output .= "\n";
-
-    $output .= "User-agent: facebookexternalhit\n";
-    $output .= "Allow: /\n";
-    $output .= "\n";
-
-    $output .= "User-agent: Twitterbot\n";
-    $output .= "Allow: /\n";
-    $output .= "\n";
-
-    $output .= "User-agent: LinkedInBot\n";
-    $output .= "Allow: /\n";
-    $output .= "\n";
-
-    $output .= "User-agent: WhatsApp\n";
-    $output .= "Allow: /\n";
-    $output .= "\n";
-
-    // Add sitemap
-    $output .= "Sitemap: " . home_url('/sitemap.xml') . "\n";
+    $sitemap_url = function_exists('get_sitemap_url') ? get_sitemap_url('index') : false;
+    if ($sitemap_url) {
+        $output .= "\nSitemap: " . $sitemap_url . "\n";
+    }
 
     return $output;
 }
@@ -6113,16 +6076,6 @@ function niesv_override_robots_meta($robots) {
 }
 add_filter('wp_robots', 'niesv_override_robots_meta', 99);
 
-/**
- * Ensure robots.txt allows social media crawlers
- */
-function niesv_ensure_robots_accessibility() {
-    // Log if site visibility is set to private (for debugging)
-    if (get_option('blog_public') != '1') {
-        error_log('NIESV: Site visibility is set to private, but social media crawlers are still allowed via robots.txt override');
-    }
-}
-add_action('init', 'niesv_ensure_robots_accessibility');
 
 /**
  * Add PWA meta tags to head
@@ -6146,7 +6099,15 @@ function niesv_social_meta_tags() {
     }
     $site_description = get_bloginfo('description');
     $site_url = home_url();
-    $current_url = is_front_page() ? $site_url : get_permalink();
+    global $wp;
+    if (is_front_page()) {
+        $current_url = $site_url;
+    } elseif (is_singular()) {
+        $current_url = get_permalink();
+    } else {
+        // Archives: get_permalink() would return the first post in the loop
+        $current_url = home_url(user_trailingslashit($wp->request));
+    }
 
     // Get page/post specific data
     if (is_singular()) {
@@ -6555,7 +6516,7 @@ function niesv_generate_seo_description($post_id = null) {
             $description = "Read about " . $post_title . " - Latest news and updates from " . $site_name;
         } elseif ($post_type === 'gallery') {
             $description = "View " . $post_title . " - Photo gallery from " . $site_name;
-        } elseif ($post_type === 'event') {
+        } elseif ($post_type === 'events') {
             $description = "Learn about " . $post_title . " - Upcoming event from " . $site_name;
         } else {
             $description = "Read about " . $post_title . " - " . $post_type_name . " from " . $site_name;
@@ -6672,13 +6633,12 @@ function niesv_auto_populate_seo_fields($post_id) {
         return;
     }
 
-    // Check if auto-populate is enabled (default to true for new posts)
-    $auto_populate = get_field('auto_populate_seo', $post_id);
-    if ($auto_populate === false || $auto_populate === null) {
-        // For new posts, set auto-populate to true by default
+    // Default auto-populate to on for posts that have never saved a choice.
+    // An editor unticking the box saves '0', which must be respected.
+    if (!metadata_exists('post', $post_id, 'auto_populate_seo')) {
         update_field('auto_populate_seo', true, $post_id);
-        $auto_populate = true;
     }
+    $auto_populate = get_field('auto_populate_seo', $post_id);
 
     // Only auto-populate if enabled
     if ($auto_populate) {
@@ -6879,9 +6839,11 @@ function niesv_register_service_worker() {
     <script>
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
+            // LiteSpeed can delay this script until after the load event has fired,
+            // so register straight away in that case instead of waiting for 'load'.
+            var niesvRegisterSW = function() {
                 // Register service worker from root to have full scope
-                navigator.serviceWorker.register('<?php echo home_url('/sw.js'); ?>', {
+                navigator.serviceWorker.register(<?php echo wp_json_encode(home_url('/sw.js')); ?>, {
                     scope: '/'
                 }).then(function(registration) {
                     console.log('NIESV PWA: Service Worker registered successfully:', registration.scope);
@@ -6901,7 +6863,12 @@ function niesv_register_service_worker() {
                     console.log('NIESV PWA: Service Worker registration failed:', error);
                     console.log('NIESV PWA: Make sure you are accessing the site via HTTP/HTTPS, not file://');
                 });
-            });
+            };
+            if (document.readyState === 'complete') {
+                niesvRegisterSW();
+            } else {
+                window.addEventListener('load', niesvRegisterSW);
+            }
         } else {
             console.log('NIESV PWA: Service Worker not supported in this browser');
         }
@@ -6917,18 +6884,60 @@ function niesv_register_service_worker() {
 }
 
 /**
+ * Path of the current request relative to the site root, e.g. '/sw.js'
+ */
+function niesv_request_path() {
+    $path = wp_parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/', PHP_URL_PATH);
+    $home_path = (string) wp_parse_url(home_url('/'), PHP_URL_PATH);
+    if ($home_path !== '/' && strpos($path, rtrim($home_path, '/')) === 0) {
+        $path = substr($path, strlen(rtrim($home_path, '/')));
+    }
+    return $path;
+}
+
+/**
+ * Manifest image paths are relative to the theme folder, but the manifest is served
+ * from the site root, so make them absolute. Entries whose file is missing are
+ * dropped so browsers don't report broken icons.
+ */
+function niesv_resolve_manifest_images($node) {
+    if (!is_array($node)) {
+        return $node;
+    }
+
+    foreach ($node as $key => $value) {
+        if (in_array($key, array('icons', 'screenshots'), true) && is_array($value)) {
+            $kept = array();
+            foreach ($value as $image) {
+                if (isset($image['src']) && !preg_match('#^(https?:)?/#', $image['src'])) {
+                    if (!file_exists(get_template_directory() . '/' . $image['src'])) {
+                        continue;
+                    }
+                    $image['src'] = get_template_directory_uri() . '/' . $image['src'];
+                }
+                $kept[] = $image;
+            }
+            $node[$key] = $kept;
+        } else {
+            $node[$key] = niesv_resolve_manifest_images($value);
+        }
+    }
+
+    return $node;
+}
+
+/**
  * Handle manifest.json requests
  */
 function niesv_serve_manifest() {
-    // Check if request is for manifest.json
-    $request_uri = $_SERVER['REQUEST_URI'];
-    if (strpos($request_uri, 'manifest.json') !== false || isset($_GET['manifest'])) {
+    if (niesv_request_path() === '/manifest.json') {
         header('Content-Type: application/json');
         header('Cache-Control: public, max-age=86400'); // Cache for 1 day
 
         $manifest_path = get_template_directory() . '/manifest.json';
-        if (file_exists($manifest_path)) {
-            readfile($manifest_path);
+        $manifest = file_exists($manifest_path) ? json_decode(file_get_contents($manifest_path), true) : null;
+        if (is_array($manifest)) {
+            echo wp_json_encode(niesv_resolve_manifest_images($manifest), JSON_UNESCAPED_SLASHES);
         } else {
             // Fallback manifest
             echo json_encode(array(
@@ -6949,15 +6958,15 @@ add_action('init', 'niesv_serve_manifest');
  * Handle service worker requests
  */
 function niesv_serve_service_worker() {
-    // Check if request is for sw.js
-    $request_uri = $_SERVER['REQUEST_URI'];
-    if (strpos($request_uri, 'sw.js') !== false || isset($_GET['sw'])) {
+    if (niesv_request_path() === '/sw.js') {
         header('Content-Type: application/javascript');
         header('Service-Worker-Allowed: /');
         header('Cache-Control: no-cache'); // Don't cache service worker
 
         $sw_path = get_template_directory() . '/sw.js';
         if (file_exists($sw_path)) {
+            // Changing bytes make browsers install the new worker, which drops old caches
+            echo 'const NIESV_CACHE_VERSION = ' . wp_json_encode(niesv_pwa_cache_version()) . ";\n";
             readfile($sw_path);
         } else {
             // Fallback minimal service worker
@@ -6976,7 +6985,7 @@ function niesv_pwa_install_prompt() {
     <div id="pwa-install-banner" class="fixed bottom-4 left-4 right-4 bg-[var(--primary-color)] text-white p-4 rounded-lg shadow-lg z-50 hidden">
         <div class="flex items-center justify-between">
             <div class="flex-1">
-                <h3 class="font-bold text-lg">Install NIESV App</h3>
+                <h3 class="font-bold text-lg text-white">Install NIESV App</h3>
                 <p class="text-sm opacity-90">Get quick access to NIESV services on your device</p>
             </div>
             <div class="flex gap-2 ml-4">
@@ -7189,10 +7198,13 @@ function niesv_update_notification_hash($value, $post_id, $field) {
     // Check if this is one of the notification fields
     $notification_fields = array('updates_title', 'update_headline', 'update_description', 'update_button_text', 'update_button_link');
 
-    if (in_array($field['name'], $notification_fields) && $post_id === 'options') {
-        // Generate new hash when notification content changes
-        $new_hash = md5(uniqid() . time());
-        update_field('notification_hash', $new_hash, 'option');
+    static $hash_updated = false;
+
+    if (!$hash_updated && in_array($field['name'], $notification_fields) && in_array($post_id, array('options', 'option'), true)
+        && (string) get_field($field['name'], 'option', false) !== (string) $value) {
+        // Content changed: a new hash makes browsers show the notification again
+        update_field('notification_hash', md5(uniqid('', true)), 'option');
+        $hash_updated = true;
     }
 
     return $value;

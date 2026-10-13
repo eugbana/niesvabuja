@@ -103,7 +103,7 @@ $news_query = new WP_Query($args);
 
                         <?php if ($image_url) : ?>
                             <div class="w-full h-48 bg-cover bg-center group-hover:scale-105 transition-transform duration-300"
-                                 style="background-image: url('<?php echo $image_url; ?>')">
+                                 style="background-image: url('<?php echo esc_url($image_url); ?>')">
                             </div>
                         <?php endif; ?>
                         
@@ -208,8 +208,8 @@ $news_query = new WP_Query($args);
     <!-- Debug info -->
     <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 4px; font-size: 12px;">
         <strong>Debug Info:</strong><br>
-        Section Title: <?php echo $section_title; ?><br>
-        Number of Posts: <?php echo $number_of_posts; ?><br>
+        Section Title: <?php echo wp_kses_post($section_title); ?><br>
+        Number of Posts: <?php echo wp_kses_post($number_of_posts); ?><br>
         News Found: <?php echo $news_query->found_posts; ?> posts<br>
         Show Excerpt: <?php echo $show_excerpt ? 'Yes' : 'No'; ?><br>
         Show Author: <?php echo $show_author ? 'Yes' : 'No'; ?><br>

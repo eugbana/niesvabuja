@@ -40,7 +40,7 @@ if ($background_color === 'primary') {
 }
 ?>
 
-<section id="<?php echo esc_attr($id); ?>" class="<?php echo esc_attr($className); ?> <?php echo $bg_class; ?> py-12 md:py-16">
+<section id="<?php echo esc_attr($id); ?>" class="<?php echo esc_attr($className); ?> <?php echo esc_attr($bg_class); ?> py-12 md:py-16">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Section Title -->
@@ -80,7 +80,7 @@ if ($background_color === 'primary') {
                         <?php if (is_string($update_content)) : ?>
                             <?php echo wp_kses_post(wpautop($update_content)); ?>
                         <?php else : ?>
-                            <?php echo $update_content; ?>
+                            <?php echo wp_kses_post($update_content); ?>
                         <?php endif; ?>
                     </div>
                 </div>

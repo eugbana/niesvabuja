@@ -42,7 +42,7 @@ get_header(); ?>
                                 <?php if ($featured_image) : ?>
                                     <img alt="<?php the_title(); ?>" 
                                          class="absolute inset-0 w-full h-full object-cover" 
-                                         src="<?php echo $featured_image; ?>"/>
+                                         src="<?php echo esc_url($featured_image); ?>"/>
                                 <?php endif; ?>
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                             </div>
@@ -54,7 +54,7 @@ get_header(); ?>
                                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
                                     </svg>
-                                    <?php echo $image_count; ?> images
+                                    <?php echo wp_kses_post($image_count); ?> images
                                     <?php if ($gallery_date) : ?>
                                         <span class="mx-2">•</span>
                                         <?php echo date('M j, Y', strtotime($gallery_date)); ?>

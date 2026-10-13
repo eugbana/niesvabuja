@@ -14,10 +14,10 @@ get_header(); ?>
         <section class="bg-[var(--primary-color)] text-white py-20">
             <div class="container mx-auto px-6 text-center">
                 <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
-                    <?php echo get_field('membership_hero_title') ?: 'Become a Member'; ?>
+                    <?php echo wp_kses_post(get_field('membership_hero_title') ?: 'Become a Member'); ?>
                 </h1>
                 <p class="mt-4 text-lg md:text-xl max-w-3xl mx-auto">
-                    <?php echo get_field('membership_hero_subtitle') ?: 'Join a vibrant community of estate surveyors and valuers in Abuja. Unlock a world of opportunities, professional growth, and collaboration.'; ?>
+                    <?php echo wp_kses_post(get_field('membership_hero_subtitle') ?: 'Join a vibrant community of estate surveyors and valuers in Abuja. Unlock a world of opportunities, professional growth, and collaboration.'); ?>
                 </p>
             </div>
         </section>
@@ -27,10 +27,10 @@ get_header(); ?>
             <div class="container mx-auto px-6">
                 <div class="text-center mb-12">
                     <h2 class="text-3xl md:text-4xl font-bold text-[var(--text-primary)]">
-                        <?php echo get_field('benefits_section_title') ?: 'Why Join NIESV Abuja?'; ?>
+                        <?php echo wp_kses_post(get_field('benefits_section_title') ?: 'Why Join NIESV Abuja?'); ?>
                     </h2>
                     <p class="mt-3 text-lg text-[var(--text-secondary)] max-w-2xl mx-auto">
-                        <?php echo get_field('benefits_section_subtitle') ?: 'Membership offers unparalleled advantages for your professional journey.'; ?>
+                        <?php echo wp_kses_post(get_field('benefits_section_subtitle') ?: 'Membership offers unparalleled advantages for your professional journey.'); ?>
                     </p>
                 </div>
                 
@@ -122,10 +122,10 @@ get_header(); ?>
             <div class="container mx-auto px-6">
                 <div class="text-center mb-12">
                     <h2 class="text-3xl md:text-4xl font-bold text-[var(--text-primary)]">
-                        <?php echo get_field('membership_types_title') ?: 'Membership Categories'; ?>
+                        <?php echo wp_kses_post(get_field('membership_types_title') ?: 'Membership Categories'); ?>
                     </h2>
                     <p class="mt-3 text-lg text-[var(--text-secondary)] max-w-2xl mx-auto">
-                        <?php echo get_field('membership_types_subtitle') ?: 'Choose the membership category that best fits your professional status and career goals.'; ?>
+                        <?php echo wp_kses_post(get_field('membership_types_subtitle') ?: 'Choose the membership category that best fits your professional status and career goals.'); ?>
                     </p>
                 </div>
                 
@@ -166,7 +166,7 @@ get_header(); ?>
                         </ul>
                         
                         <div class="text-center">
-                            <a href="<?php echo get_field('full_membership_link') ?: '#'; ?>" 
+                            <a href="<?php echo esc_url(get_field('full_membership_link') ?: '#'); ?>" 
                                class="btn-primary px-6 py-3 rounded-lg font-semibold">
                                 Apply Now
                             </a>
@@ -208,7 +208,7 @@ get_header(); ?>
                         </ul>
                         
                         <div class="text-center">
-                            <a href="<?php echo get_field('associate_membership_link') ?: '#'; ?>" 
+                            <a href="<?php echo esc_url(get_field('associate_membership_link') ?: '#'); ?>" 
                                class="bg-[var(--accent-gold)] text-[var(--primary-color)] px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all">
                                 Apply Now
                             </a>
@@ -250,7 +250,7 @@ get_header(); ?>
                         </ul>
                         
                         <div class="text-center">
-                            <a href="<?php echo get_field('student_membership_link') ?: '#'; ?>" 
+                            <a href="<?php echo esc_url(get_field('student_membership_link') ?: '#'); ?>" 
                                class="bg-[var(--text-secondary)] text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all">
                                 Apply Now
                             </a>
@@ -265,10 +265,10 @@ get_header(); ?>
             <div class="container mx-auto px-6">
                 <div class="text-center mb-12">
                     <h2 class="text-3xl md:text-4xl font-bold text-[var(--text-primary)]">
-                        <?php echo get_field('application_process_title') ?: 'How to Apply'; ?>
+                        <?php echo wp_kses_post(get_field('application_process_title') ?: 'How to Apply'); ?>
                     </h2>
                     <p class="mt-3 text-lg text-[var(--text-secondary)] max-w-2xl mx-auto">
-                        <?php echo get_field('application_process_subtitle') ?: 'Follow these simple steps to join our professional community.'; ?>
+                        <?php echo wp_kses_post(get_field('application_process_subtitle') ?: 'Follow these simple steps to join our professional community.'); ?>
                     </p>
                 </div>
                 
@@ -300,19 +300,19 @@ get_header(); ?>
         <section class="py-16 bg-[var(--primary-color)] text-white">
             <div class="container mx-auto px-6 text-center">
                 <h2 class="text-3xl md:text-4xl font-bold mb-4">
-                    <?php echo get_field('cta_title') ?: 'Ready to Join Our Community?'; ?>
+                    <?php echo wp_kses_post(get_field('cta_title') ?: 'Ready to Join Our Community?'); ?>
                 </h2>
                 <p class="text-lg mb-8 max-w-2xl mx-auto">
-                    <?php echo get_field('cta_subtitle') ?: 'Take the next step in your professional journey and become part of the leading estate surveying and valuation community in Abuja.'; ?>
+                    <?php echo wp_kses_post(get_field('cta_subtitle') ?: 'Take the next step in your professional journey and become part of the leading estate surveying and valuation community in Abuja.'); ?>
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="<?php echo get_field('primary_cta_link') ?: '#'; ?>" 
+                    <a href="<?php echo esc_url(get_field('primary_cta_link') ?: '#'); ?>" 
                        class="bg-[var(--accent-gold)] text-[var(--primary-color)] px-8 py-4 rounded-lg font-bold text-lg hover:bg-opacity-90 transition-all">
-                        <?php echo get_field('primary_cta_text') ?: 'Apply for Membership'; ?>
+                        <?php echo wp_kses_post(get_field('primary_cta_text') ?: 'Apply for Membership'); ?>
                     </a>
-                    <a href="<?php echo get_field('secondary_cta_link') ?: home_url('/contact'); ?>" 
+                    <a href="<?php echo esc_url(get_field('secondary_cta_link') ?: home_url('/contact')); ?>" 
                        class="border-2 border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-[var(--primary-color)] transition-all">
-                        <?php echo get_field('secondary_cta_text') ?: 'Contact Us'; ?>
+                        <?php echo wp_kses_post(get_field('secondary_cta_text') ?: 'Contact Us'); ?>
                     </a>
                 </div>
             </div>

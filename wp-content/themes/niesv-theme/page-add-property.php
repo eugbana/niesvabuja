@@ -15,6 +15,12 @@ if (!is_user_logged_in()) {
 
 $current_user = wp_get_current_user();
 
+// Only verified members (and admins) can list properties
+if (!niesv_user_has_property_access($current_user->ID)) {
+    wp_redirect(add_query_arg('error', 'not_verified', home_url('/property-dashboard/')));
+    exit;
+}
+
 // Keep this form in step with the Property Details ACF field group used in wp-admin.
 $property_types = array('residential', 'commercial', 'land', 'industrial');
 $property_statuses = array('for_sale', 'for_rent', 'sold', 'rented');
@@ -132,7 +138,7 @@ get_header(); ?>
             <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
                 <ul class="list-disc list-inside space-y-1">
                     <?php foreach ($errors as $error) : ?>
-                        <li><?php echo $error; ?></li>
+                        <li><?php echo wp_kses_post($error); ?></li>
                     <?php endforeach; ?>
                 </ul>
             </div>

@@ -8,12 +8,6 @@
  * @param int|string $post_id The post ID this block is saved to.
  */
 
-// Debug: Always show this block is loading
-error_log('NIESV Hero Block: Template loaded');
-
-// Simple test - always output something visible
-echo '<!-- NIESV Hero Block Template Loaded -->';
-
 // Create id attribute allowing for custom "anchor" value.
 $id = 'hero-section-' . $block['id'];
 if (!empty($block['anchor'])) {
@@ -39,11 +33,6 @@ $hero_overlay_opacity = get_field('hero_overlay_opacity') ?: 70;
 
 // Default background image if none selected
 $background_image = $hero_background_image ?: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBKDf3P5asmG-v4EY8nAU9L0H5PZUiJ0YNgPybkSNq3irU15GRrcsB5XncMNTjAUq3nwakDyylES6YwIA_4VcbPjr6AMa5wdryZ9T5G3QnyhToDnXC9FWwcG9-MC6BnU8DaMslFruUrSEzK5Orq8Ha80DQlPU02chZPuo9GD4fEWD8kNAFdZzaf729thiK_t1qRoYzg4e4DVAvG9yE7CVEEl0gDxkMLGCNl6W4miEOkryLEGdODEFL3ViX-SGwDYUcsVnIq1GZtqpl7';
-
-// Debug: Log the values
-error_log('NIESV Hero: Title = ' . $hero_title);
-error_log('NIESV Hero: Subtitle = ' . $hero_subtitle);
-error_log('NIESV Hero: Background = ' . $background_image);
 
 ?>
 
@@ -73,7 +62,6 @@ error_log('NIESV Hero: Background = ' . $background_image);
 <!-- Debug: Always show this for troubleshooting -->
 <?php if (!$is_preview) : ?>
     <!-- Hero block loaded successfully -->
-    <script>console.log('NIESV Hero Block: Rendered on frontend');</script>
 <?php endif; ?>
 
 <?php if ($is_preview) : ?>

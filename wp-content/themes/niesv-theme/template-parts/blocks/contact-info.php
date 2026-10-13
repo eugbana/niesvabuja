@@ -48,7 +48,7 @@ if ($background_style === 'dark') {
 }
 ?>
 
-<section id="<?php echo esc_attr($id); ?>" class="<?php echo esc_attr($className); ?> <?php echo $bg_class; ?> py-12 md:py-20">
+<section id="<?php echo esc_attr($id); ?>" class="<?php echo esc_attr($className); ?> <?php echo esc_attr($bg_class); ?> py-12 md:py-20">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Section Header -->
@@ -141,7 +141,7 @@ if ($background_style === 'dark') {
                         Office Hours
                     </h3>
                     <div class="<?php echo $background_style === 'dark' ? 'text-gray-300' : 'text-[#49739c]'; ?>">
-                        <?php echo $office_hours; ?>
+                        <?php echo wp_kses_post($office_hours); ?>
                     </div>
                 </div>
             </div>

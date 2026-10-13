@@ -5,8 +5,8 @@
  * This file provides functions to clear various types of cache
  * on the cloud server to help with development and debugging.
  * 
- * Usage: Add ?clear_cache=all to any URL to clear all caches
- * Or use specific cache types: ?clear_cache=wp or ?clear_cache=opcache
+ * Usage: administrators use the "Clear Cache" admin bar menu or the dashboard
+ * widget. The links carry a nonce, so a bare ?clear_cache=all URL does nothing.
  */
 
 // Security check - only allow cache clearing in development or for admins
@@ -19,8 +19,8 @@ if (!defined('ABSPATH')) {
  */
 if (!function_exists('niesv_init_cache_clearing')) {
 function niesv_init_cache_clearing() {
-    // Only allow cache clearing for administrators or in development
-    if (is_user_logged_in() && (current_user_can('administrator') || WP_DEBUG || isset($_GET['force_clear']))) {
+    // Only administrators can clear caches
+    if (current_user_can('manage_options')) {
         add_action('wp_loaded', 'niesv_handle_cache_clear_request');
     }
 }
@@ -32,6 +32,7 @@ add_action('init', 'niesv_init_cache_clearing');
  */
 function niesv_handle_cache_clear_request() {
     if (isset($_GET['clear_cache'])) {
+        check_admin_referer('niesv_clear_cache');
         $cache_type = sanitize_text_field($_GET['clear_cache']);
         $results = niesv_clear_cache($cache_type);
         
@@ -131,8 +132,8 @@ function niesv_clear_wordpress_cache() {
     }
     
     // Clear LiteSpeed Cache
-    if (class_exists('LiteSpeed_Cache_API')) {
-        LiteSpeed_Cache_API::purge_all();
+    if (defined('LSCWP_V')) {
+        do_action('litespeed_purge_all');
         $cleared = true;
     }
     
@@ -261,7 +262,7 @@ function niesv_clear_pwa_cache() {
  */
 function niesv_clear_pwa_cache_transient() {
     // Verify nonce
-    if (!wp_verify_nonce($_POST['nonce'], 'niesv_pwa_clear')) {
+    if (!wp_verify_nonce($_POST['nonce'] ?? '', 'niesv_pwa_clear')) {
         wp_die('Security check failed');
     }
 
@@ -272,17 +273,24 @@ add_action('wp_ajax_niesv_clear_pwa_cache_transient', 'niesv_clear_pwa_cache_tra
 add_action('wp_ajax_nopriv_niesv_clear_pwa_cache_transient', 'niesv_clear_pwa_cache_transient');
 
 /**
+ * URL that clears the given cache type, with a nonce
+ */
+function niesv_cache_clear_url($type) {
+    return wp_nonce_url(add_query_arg('clear_cache', $type), 'niesv_clear_cache');
+}
+
+/**
  * Add cache clear button to admin bar
  */
 function niesv_add_cache_clear_admin_bar($wp_admin_bar) {
-    if (!current_user_can('administrator')) {
+    if (!current_user_can('manage_options')) {
         return;
     }
     
     $wp_admin_bar->add_node(array(
         'id' => 'clear-cache',
         'title' => 'Clear Cache',
-        'href' => add_query_arg('clear_cache', 'all'),
+        'href' => niesv_cache_clear_url('all'),
         'meta' => array(
             'title' => 'Clear all caches'
         )
@@ -293,28 +301,28 @@ function niesv_add_cache_clear_admin_bar($wp_admin_bar) {
         'parent' => 'clear-cache',
         'id' => 'clear-wp-cache',
         'title' => 'WordPress Cache',
-        'href' => add_query_arg('clear_cache', 'wp')
+        'href' => niesv_cache_clear_url('wp')
     ));
     
     $wp_admin_bar->add_node(array(
         'parent' => 'clear-cache',
         'id' => 'clear-opcache',
         'title' => 'PHP OPcache',
-        'href' => add_query_arg('clear_cache', 'opcache')
+        'href' => niesv_cache_clear_url('opcache')
     ));
     
     $wp_admin_bar->add_node(array(
         'parent' => 'clear-cache',
         'id' => 'clear-transients',
         'title' => 'Transients',
-        'href' => add_query_arg('clear_cache', 'transients')
+        'href' => niesv_cache_clear_url('transients')
     ));
 
     $wp_admin_bar->add_node(array(
         'parent' => 'clear-cache',
         'id' => 'clear-pwa-cache',
         'title' => 'PWA Cache',
-        'href' => add_query_arg('clear_cache', 'pwa')
+        'href' => niesv_cache_clear_url('pwa')
     ));
 }
 add_action('admin_bar_menu', 'niesv_add_cache_clear_admin_bar', 100);
@@ -337,9 +345,9 @@ function niesv_cache_status_dashboard_widget() {
     
     // Quick clear buttons
     echo '<p>';
-    echo '<a href="' . add_query_arg('clear_cache', 'all') . '" class="button button-primary">Clear All Cache</a> ';
-    echo '<a href="' . add_query_arg('clear_cache', 'opcache') . '" class="button">Clear OPcache</a> ';
-    echo '<a href="' . add_query_arg('clear_cache', 'pwa') . '" class="button">Clear PWA Cache</a>';
+    echo '<a href=\"' . esc_url(niesv_cache_clear_url('all')) . '\" class="button button-primary">Clear All Cache</a> ';
+    echo '<a href=\"' . esc_url(niesv_cache_clear_url('opcache')) . '\" class="button">Clear OPcache</a> ';
+    echo '<a href=\"' . esc_url(niesv_cache_clear_url('pwa')) . '\" class="button">Clear PWA Cache</a>';
     echo '</p>';
     
     echo '</div>';

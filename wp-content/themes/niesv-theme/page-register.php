@@ -14,18 +14,28 @@ if (is_user_logged_in()) {
 
 // Handle registration form submission
 if (isset($_POST['register_submit'])) {
-    $username = sanitize_text_field($_POST['username']);
-    $email = sanitize_email($_POST['email']);
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
-    $first_name = sanitize_text_field($_POST['first_name']);
-    $last_name = sanitize_text_field($_POST['last_name']);
-    $phone = sanitize_text_field($_POST['phone']);
-    $membership_no = sanitize_text_field($_POST['membership_no']);
-    $confirm_membership_no = sanitize_text_field($_POST['confirm_membership_no']);
+    $username = sanitize_text_field(wp_unslash($_POST['username'] ?? ''));
+    $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
+    // Passwords stay slashed, matching how WordPress core hashes and checks them
+    $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
+    $first_name = sanitize_text_field(wp_unslash($_POST['first_name'] ?? ''));
+    $last_name = sanitize_text_field(wp_unslash($_POST['last_name'] ?? ''));
+    $phone = sanitize_text_field(wp_unslash($_POST['phone'] ?? ''));
+    $membership_no = sanitize_text_field(wp_unslash($_POST['membership_no'] ?? ''));
+    $confirm_membership_no = sanitize_text_field(wp_unslash($_POST['confirm_membership_no'] ?? ''));
 
     $errors = array();
-    
+
+    if (!isset($_POST['niesv_register_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['niesv_register_nonce'])), 'niesv_register')) {
+        $errors[] = 'Your session has expired. Please refresh the page and try again.';
+    }
+
+    // Honeypot: hidden from people, bots tend to fill it in
+    if (!empty($_POST['website'])) {
+        $errors[] = 'Registration could not be completed.';
+    }
+
     // Validation
     if (empty($username)) {
         $errors[] = 'Username is required.';
@@ -92,18 +102,28 @@ if (isset($_POST['register_submit'])) {
             $member_status = get_field('membership_status', $member_verification->ID);
 
             // Check if membership is active
-            if ($member_status && $member_status !== 'active') {
+            if ($member_status !== 'active') {
                 $errors[] = 'This membership number is not active. Please contact NIESV Abuja Branch for assistance.';
             }
 
-            // Check if email matches (optional validation)
+            // The email must match the one on the member record
             $member_email = get_field('email_address', $member_verification->ID);
-            if (!empty($member_email) && strtolower($member_email) !== strtolower($email)) {
+            if (empty($member_email) || strtolower($member_email) !== strtolower($email)) {
                 $errors[] = 'The email address does not match our records for this membership number.';
             }
         } else {
             $errors[] = 'Membership number not found in our records. Please verify your membership number or contact NIESV Abuja Branch.';
         }
+    }
+
+    // Each membership number can only be linked to one website account
+    if (!empty($membership_no) && get_users(array(
+        'meta_key'   => 'membership_no',
+        'meta_value' => $membership_no,
+        'number'     => 1,
+        'fields'     => 'ID',
+    ))) {
+        $errors[] = 'An account already exists for this membership number. Please log in, or contact NIESV Abuja Branch if you did not create it.';
     }
 
     // If no errors, create user
@@ -190,7 +210,7 @@ get_header(); ?>
                 <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
                     <ul class="list-disc list-inside space-y-1">
                         <?php foreach ($errors as $error) : ?>
-                            <li><?php echo $error; ?></li>
+                            <li><?php echo wp_kses_post($error); ?></li>
                         <?php endforeach; ?>
                     </ul>
                 </div>
@@ -198,6 +218,11 @@ get_header(); ?>
             
             <!-- Registration Form -->
             <form method="post" action="">
+                <?php wp_nonce_field('niesv_register', 'niesv_register_nonce'); ?>
+                <div style="position:absolute;left:-10000px" aria-hidden="true">
+                    <label for="website">Leave this field empty</label>
+                    <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
+                </div>
                 <div class="space-y-6">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
