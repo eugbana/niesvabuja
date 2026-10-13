@@ -244,21 +244,21 @@ get_header(); ?>
                                                     <?php echo $property->post_title; ?>
                                                 </div>
                                                 <?php if ($property_location) : ?>
-                                                    <div class="text-sm text-gray-500"><?php echo $property_location; ?></div>
+                                                    <div class="text-sm text-gray-500"><?php echo wp_kses_post($property_location); ?></div>
                                                 <?php endif; ?>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        <?php echo $type_display; ?>
+                                        <?php echo wp_kses_post($type_display); ?>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="space-y-1">
-                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full <?php echo $status_color; ?>">
-                                                <?php echo $status_display; ?>
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full <?php echo esc_attr($status_color); ?>">
+                                                <?php echo wp_kses_post($status_display); ?>
                                             </span>
                                             <br>
-                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full <?php echo $post_status_color; ?>">
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full <?php echo esc_attr($post_status_color); ?>">
                                                 <?php echo ucfirst($property->post_status); ?>
                                             </span>
                                         </div>
@@ -278,7 +278,7 @@ get_header(); ?>
                                            class="text-blue-600 hover:text-blue-900" target="_blank">View</a>
                                         <a href="<?php echo add_query_arg('property_id', $property->ID, home_url('/edit-property/')); ?>"
                                            class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                        <a href="<?php echo add_query_arg(array('action' => 'delete', 'property_id' => $property->ID)); ?>"
+                                        <a href="<?php echo esc_url(niesv_delete_property_url($property->ID)); ?>"
                                            class="text-red-600 hover:text-red-900"
                                            onclick="return confirm('Are you sure you want to delete this property? This action cannot be undone.')">Delete</a>
                                     </td>

@@ -149,7 +149,7 @@ $properties_query = new WP_Query($args);
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     </svg>
-                                    <?php echo $property_location; ?>
+                                    <?php echo wp_kses_post($property_location); ?>
                                 </p>
                             <?php endif; ?>
                             
@@ -161,7 +161,7 @@ $properties_query = new WP_Query($args);
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
                                             </svg>
-                                            <?php echo $property_bedrooms; ?> Bed<?php echo $property_bedrooms > 1 ? 's' : ''; ?>
+                                            <?php echo wp_kses_post($property_bedrooms); ?> Bed<?php echo $property_bedrooms > 1 ? 's' : ''; ?>
                                         </span>
                                     <?php endif; ?>
                                     
@@ -170,7 +170,7 @@ $properties_query = new WP_Query($args);
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>
                                             </svg>
-                                            <?php echo $property_bathrooms; ?> Bath<?php echo $property_bathrooms > 1 ? 's' : ''; ?>
+                                            <?php echo wp_kses_post($property_bathrooms); ?> Bath<?php echo $property_bathrooms > 1 ? 's' : ''; ?>
                                         </span>
                                     <?php endif; ?>
                                     
@@ -179,7 +179,7 @@ $properties_query = new WP_Query($args);
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
                                             </svg>
-                                            <?php echo $property_size; ?>
+                                            <?php echo wp_kses_post($property_size); ?>
                                         </span>
                                     <?php endif; ?>
                                 </div>
@@ -198,7 +198,7 @@ $properties_query = new WP_Query($args);
                                 </a>
                                 
                                 <?php if (get_field('contact_agent_link')) : ?>
-                                    <a href="<?php echo get_field('contact_agent_link'); ?>" 
+                                    <a href="<?php echo esc_url(get_field('contact_agent_link')); ?>" 
                                        class="py-2 px-4 border border-[rgba(0,0,40,1)] text-[rgba(0,0,40,1)] rounded-md text-sm font-semibold hover:bg-[rgba(0,0,40,1)] hover:text-white transition-all">
                                         Contact Agent
                                     </a>

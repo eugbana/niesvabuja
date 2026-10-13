@@ -60,7 +60,7 @@ get_header(); ?>
             <!-- Error Message -->
             <?php if (isset($login_error)) : ?>
                 <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
-                    <?php echo $login_error; ?>
+                    <?php echo wp_kses_post($login_error); ?>
                 </div>
             <?php endif; ?>
             

@@ -351,7 +351,7 @@ get_header(); ?>
                                                class="text-[var(--primary-color)] hover:text-opacity-80 mr-3">Edit</a>
                                             <a href="<?php echo get_permalink($property->ID); ?>"
                                                class="text-gray-600 hover:text-gray-900 mr-3" target="_blank">View</a>
-                                            <a href="<?php echo add_query_arg(array('action' => 'delete', 'property_id' => $property->ID)); ?>"
+                                            <a href="<?php echo esc_url(niesv_delete_property_url($property->ID)); ?>"
                                                class="text-red-600 hover:text-red-900"
                                                onclick="return confirm('Are you sure you want to delete this property? This action cannot be undone.')">Delete</a>
                                         </td>

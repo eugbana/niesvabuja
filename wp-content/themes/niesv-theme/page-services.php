@@ -15,11 +15,11 @@ get_header(); ?>
             <!-- Page Header -->
             <div class="text-center mb-16">
                 <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-[var(--primary-color)]">
-                    <?php echo get_field('page_title') ?: get_the_title(); ?>
+                    <?php echo wp_kses_post(get_field('page_title') ?: get_the_title()); ?>
                 </h1>
                 <?php if (get_field('page_subtitle')) : ?>
                     <p class="mt-4 text-lg text-[var(--text-secondary)] max-w-3xl mx-auto">
-                        <?php echo get_field('page_subtitle'); ?>
+                        <?php echo wp_kses_post(get_field('page_subtitle')); ?>
                     </p>
                 <?php endif; ?>
             </div>
@@ -56,7 +56,7 @@ get_header(); ?>
                                             <svg class="w-4 h-4 text-[var(--accent-gold)] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
-                                            <?php echo $feature['feature']; ?>
+                                            <?php echo wp_kses_post($feature['feature']); ?>
                                         </li>
                                     <?php endforeach; ?>
                                 </ul>
@@ -71,11 +71,11 @@ get_header(); ?>
                 <div class="bg-gray-50 rounded-2xl p-8 md:p-12 mb-16">
                     <div class="text-center mb-12">
                         <h2 class="text-3xl font-bold text-[var(--primary-color)] mb-4">
-                            <?php echo get_field('why_choose_title') ?: 'Why Choose NIESV Abuja?'; ?>
+                            <?php echo wp_kses_post(get_field('why_choose_title') ?: 'Why Choose NIESV Abuja?'); ?>
                         </h2>
                         <?php if (get_field('why_choose_subtitle')) : ?>
                             <p class="text-lg text-[var(--text-secondary)]">
-                                <?php echo get_field('why_choose_subtitle'); ?>
+                                <?php echo wp_kses_post(get_field('why_choose_subtitle')); ?>
                             </p>
                         <?php endif; ?>
                     </div>
@@ -106,26 +106,26 @@ get_header(); ?>
             <?php if (get_field('show_cta_section')) : ?>
                 <div class="bg-[var(--primary-color)] rounded-2xl p-8 md:p-12 text-center text-white">
                     <h2 class="text-3xl font-bold mb-4">
-                        <?php echo get_field('cta_title') ?: 'Ready to Get Started?'; ?>
+                        <?php echo wp_kses_post(get_field('cta_title') ?: 'Ready to Get Started?'); ?>
                     </h2>
                     <?php if (get_field('cta_description')) : ?>
                         <p class="text-lg mb-8 opacity-90">
-                            <?php echo get_field('cta_description'); ?>
+                            <?php echo wp_kses_post(get_field('cta_description')); ?>
                         </p>
                     <?php endif; ?>
                     
                     <div class="flex flex-col sm:flex-row gap-4 justify-center">
                         <?php if (get_field('cta_primary_button_text')) : ?>
-                            <a href="<?php echo get_field('cta_primary_button_link') ?: '#'; ?>" 
+                            <a href="<?php echo esc_url(get_field('cta_primary_button_link') ?: '#'); ?>" 
                                class="bg-[var(--accent-gold)] text-[var(--primary-color)] px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all duration-300">
-                                <?php echo get_field('cta_primary_button_text'); ?>
+                                <?php echo wp_kses_post(get_field('cta_primary_button_text')); ?>
                             </a>
                         <?php endif; ?>
                         
                         <?php if (get_field('cta_secondary_button_text')) : ?>
-                            <a href="<?php echo get_field('cta_secondary_button_link') ?: '#'; ?>" 
+                            <a href="<?php echo esc_url(get_field('cta_secondary_button_link') ?: '#'); ?>" 
                                class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-[var(--primary-color)] transition-all duration-300">
-                                <?php echo get_field('cta_secondary_button_text'); ?>
+                                <?php echo wp_kses_post(get_field('cta_secondary_button_text')); ?>
                             </a>
                         <?php endif; ?>
                     </div>

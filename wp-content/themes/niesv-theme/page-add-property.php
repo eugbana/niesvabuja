@@ -138,7 +138,7 @@ get_header(); ?>
             <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
                 <ul class="list-disc list-inside space-y-1">
                     <?php foreach ($errors as $error) : ?>
-                        <li><?php echo $error; ?></li>
+                        <li><?php echo wp_kses_post($error); ?></li>
                     <?php endforeach; ?>
                 </ul>
             </div>

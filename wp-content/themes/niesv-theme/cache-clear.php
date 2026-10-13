@@ -345,9 +345,9 @@ function niesv_cache_status_dashboard_widget() {
     
     // Quick clear buttons
     echo '<p>';
-    echo '<a href="' . add_query_arg('clear_cache', 'all') . '" class="button button-primary">Clear All Cache</a> ';
-    echo '<a href="' . add_query_arg('clear_cache', 'opcache') . '" class="button">Clear OPcache</a> ';
-    echo '<a href="' . add_query_arg('clear_cache', 'pwa') . '" class="button">Clear PWA Cache</a>';
+    echo '<a href=\"' . esc_url(niesv_cache_clear_url('all')) . '\" class="button button-primary">Clear All Cache</a> ';
+    echo '<a href=\"' . esc_url(niesv_cache_clear_url('opcache')) . '\" class="button">Clear OPcache</a> ';
+    echo '<a href=\"' . esc_url(niesv_cache_clear_url('pwa')) . '\" class="button">Clear PWA Cache</a>';
     echo '</p>';
     
     echo '</div>';

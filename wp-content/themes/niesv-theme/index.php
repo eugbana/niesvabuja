@@ -32,7 +32,7 @@ get_header(); ?>
                 $slide_subtitle = !empty($slide['slide_subtitle']) ? $slide['slide_subtitle'] : 'Setting the standard for estate surveying and valuation in the Federal Capital Territory.';
                 $bg_image_url = !empty($bg_image['url']) ? $bg_image['url'] : 'https://lh3.googleusercontent.com/aida-public/AB6AXuBKDf3P5asmG-v4EY8nAU9L0H5PZUiJ0YNgPybkSNq3irU15GRrcsB5XncMNTjAUq3nwakDyylES6YwIA_4VcbPjr6AMa5wdryZ9T5G3QnyhToDnXC9FWwcG9-MC6BnU8DaMslFruUrSEzK5Orq8Ha80DQlPU02chZPuo9GD4fEWD8kNAFdZzaf729thiK_t1qRoYzg4e4DVAvG9yE7CVEEl0gDxkMLGCNl6W4miEOkryLEGdODEFL3ViX-SGwDYUcsVnIq1GZtqpl7';
                 ?>
-                <div class="hero-slide <?php echo $active_class; ?> absolute inset-0 w-full h-full flex items-center justify-center bg-cover bg-center transition-opacity duration-1000"
+                <div class="hero-slide <?php echo esc_attr($active_class); ?> absolute inset-0 w-full h-full flex items-center justify-center bg-cover bg-center transition-opacity duration-1000"
                      style='background-image: linear-gradient(rgba(0, 0, 40, 0.6) 0%, rgba(0, 0, 40, 0.9) 100%), url("<?php echo esc_url($bg_image_url); ?>");'>
                     <div class="text-center text-white px-4">
                         <h1 class="hero-title text-6xl md:text-7xl font-extrabold leading-tight tracking-tighter mb-5">
@@ -77,7 +77,7 @@ get_header(); ?>
             <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3">
                 <?php foreach ($hero_slides as $index => $slide) : ?>
                     <button class="carousel-dot w-3 h-3 rounded-full bg-white/50 hover:bg-white/80 transition-all duration-300 <?php echo $index === 0 ? 'active bg-white' : ''; ?>"
-                            data-slide="<?php echo $index; ?>"></button>
+                            data-slide="<?php echo esc_attr($index); ?>"></button>
                 <?php endforeach; ?>
             </div>
 
@@ -111,7 +111,7 @@ get_header(); ?>
                     <svg class="w-10 h-10 text-[var(--accent-gold)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
                     </svg>
-                    <?php echo $updates_title; ?>
+                    <?php echo wp_kses_post($updates_title); ?>
                 </h2>
             </div>
 
@@ -121,13 +121,13 @@ get_header(); ?>
                         <div class="md:col-span-2">
                             <?php if ($update_headline) : ?>
                                 <h3 class="text-3xl font-bold text-[var(--primary-color)] mb-4">
-                                    <?php echo $update_headline; ?>
+                                    <?php echo wp_kses_post($update_headline); ?>
                                 </h3>
                             <?php endif; ?>
 
                             <?php if ($update_description) : ?>
                                 <div class="text-[var(--text-secondary)] text-lg">
-                                    <?php echo $update_description; ?>
+                                    <?php echo wp_kses_post($update_description); ?>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -135,8 +135,8 @@ get_header(); ?>
                         <?php if ($update_button_text) : ?>
                             <div class="text-center">
                                 <a class="inline-block min-w-[160px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-14 px-8 bg-[var(--primary-color)] text-white text-xl font-bold leading-normal tracking-wide hover:bg-opacity-90 transition-all shadow-lg"
-                                   href="<?php echo $update_button_link ?: '#'; ?>">
-                                    <?php echo $update_button_text; ?>
+                                   href="<?php echo esc_url($update_button_link ?: '#'); ?>">
+                                    <?php echo wp_kses_post($update_button_text); ?>
                                 </a>
                             </div>
                         <?php endif; ?>
@@ -311,7 +311,7 @@ get_header(); ?>
     <section class="py-20 px-4 md:px-10 lg:px-20">
         <div class="mb-12">
             <h2 class="text-4xl font-bold tracking-tight mb-2 text-[var(--primary-color)] border-b-4 border-[var(--accent-gold)] inline-block pb-2">
-                <?php echo get_field('team_section_title', $front_page_id) ?: 'Meet Our Team'; ?>
+                <?php echo wp_kses_post(get_field('team_section_title', $front_page_id) ?: 'Meet Our Team'); ?>
             </h2>
         </div>
 
@@ -459,7 +459,7 @@ get_header(); ?>
     <section class="py-20 px-4 md:px-10 lg:px-20">
         <div class="mb-12">
             <h2 class="text-4xl font-bold tracking-tight mb-2 text-[var(--primary-color)] border-b-4 border-[var(--accent-gold)] inline-block pb-2">
-                <?php echo get_field('news_section_title', $front_page_id) ?: 'Latest News'; ?>
+                <?php echo wp_kses_post(get_field('news_section_title', $front_page_id) ?: 'Latest News'); ?>
             </h2>
         </div>
 
@@ -599,7 +599,7 @@ get_header(); ?>
     <section class="bg-gray-50 py-20 px-4 md:px-10 lg:px-20">
         <div class="mb-12">
             <h2 class="text-4xl font-bold tracking-tight mb-2 text-[var(--primary-color)] border-b-4 border-[var(--accent-gold)] inline-block pb-2">
-                <?php echo get_field('events_section_title', $front_page_id) ?: 'Upcoming Events'; ?>
+                <?php echo wp_kses_post(get_field('events_section_title', $front_page_id) ?: 'Upcoming Events'); ?>
             </h2>
         </div>
         <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -631,7 +631,7 @@ get_header(); ?>
             ?>
                 <a href="<?php the_permalink(); ?>" class="bg-[#d4af37] rounded-2xl shadow-lg flex items-center p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
                     <div class="bg-white text-[var(--primary-color)] rounded-lg p-4 text-center min-w-[80px] flex flex-col items-center justify-center mr-6 shadow-md">
-                        <div class="text-3xl font-bold"><?php echo $day; ?></div>
+                        <div class="text-3xl font-bold"><?php echo wp_kses_post($day); ?></div>
                         <div class="text-xs uppercase tracking-wide mt-1"><?php echo strtoupper($month); ?></div>
                     </div>
                     <div class="flex-1">
@@ -671,16 +671,16 @@ get_header(); ?>
                         $text_color = $is_gold ? 'text-[var(--primary-color)]' : 'text-[var(--primary-color)]';
                         $desc_color = $is_gold ? 'text-[var(--primary-color)]' : 'text-[var(--text-secondary)]';
                 ?>
-                    <a href="<?php the_permalink(); ?>" class="<?php echo $card_bg; ?> rounded-2xl shadow-lg flex items-center p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
-                        <div class="<?php echo $date_bg; ?> rounded-lg p-4 text-center min-w-[80px] flex flex-col items-center justify-center mr-6 shadow-md">
-                            <div class="text-3xl font-bold"><?php echo $day; ?></div>
+                    <a href="<?php the_permalink(); ?>" class="<?php echo esc_attr($card_bg); ?> rounded-2xl shadow-lg flex items-center p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
+                        <div class="<?php echo esc_attr($date_bg); ?> rounded-lg p-4 text-center min-w-[80px] flex flex-col items-center justify-center mr-6 shadow-md">
+                            <div class="text-3xl font-bold"><?php echo wp_kses_post($day); ?></div>
                             <div class="text-xs uppercase tracking-wide mt-1"><?php echo strtoupper($month); ?></div>
                         </div>
                         <div class="flex-1">
-                            <h3 class="text-xl font-bold mb-2 <?php echo $text_color; ?>">
+                            <h3 class="text-xl font-bold mb-2 <?php echo esc_attr($text_color); ?>">
                                 <?php the_title(); ?>
                             </h3>
-                            <p class="<?php echo $desc_color; ?> text-sm">
+                            <p class="<?php echo esc_attr($desc_color); ?> text-sm">
                                 <?php echo wp_trim_words(get_the_excerpt(), 10, '...'); ?>
                             </p>
                         </div>
@@ -759,7 +759,7 @@ get_header(); ?>
     <section class="bg-white py-20 px-4 md:px-10 lg:px-20">
         <div class="mb-12">
             <h2 class="text-4xl font-bold tracking-tight mb-2 text-[var(--primary-color)] border-b-4 border-[var(--accent-gold)] inline-block pb-2">
-                <?php echo get_field('affiliates_section_title', $front_page_id) ?: 'Our Affiliates'; ?>
+                <?php echo wp_kses_post(get_field('affiliates_section_title', $front_page_id) ?: 'Our Affiliates'); ?>
             </h2>
         </div>
 
@@ -775,15 +775,15 @@ get_header(); ?>
                         <div class="affiliate-slide flex-shrink-0 w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 px-4">
                             <div class="w-full h-36 bg-gray-100 rounded-lg flex items-center justify-center p-4 hover:shadow-md transition-shadow duration-300">
                                 <?php if ($affiliate['affiliate_url']) : ?>
-                                    <a href="<?php echo $affiliate['affiliate_url']; ?>" target="_blank" class="w-full h-full flex items-center justify-center">
+                                    <a href="<?php echo esc_url($affiliate['affiliate_url']); ?>" target="_blank" class="w-full h-full flex items-center justify-center">
                                 <?php endif; ?>
 
                                 <?php if ($affiliate['affiliate_logo']) : ?>
-                                    <img src="<?php echo $affiliate['affiliate_logo']['url']; ?>"
-                                         alt="<?php echo $affiliate['affiliate_name']; ?>"
+                                    <img src="<?php echo esc_url($affiliate['affiliate_logo']['url']); ?>"
+                                         alt="<?php echo esc_attr($affiliate['affiliate_name']); ?>"
                                          class="max-w-full max-h-full object-contain">
                                 <?php else : ?>
-                                    <span class="text-gray-400 text-xs text-center"><?php echo $affiliate['affiliate_name']; ?></span>
+                                    <span class="text-gray-400 text-xs text-center"><?php echo wp_kses_post($affiliate['affiliate_name']); ?></span>
                                 <?php endif; ?>
 
                                 <?php if ($affiliate['affiliate_url']) : ?>

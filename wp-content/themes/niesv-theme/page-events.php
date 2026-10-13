@@ -15,11 +15,11 @@ get_header(); ?>
             <!-- Page Header -->
             <div class="text-center mb-16">
                 <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-[var(--primary-color)]">
-                    <?php echo get_field('page_title') ?: get_the_title(); ?>
+                    <?php echo wp_kses_post(get_field('page_title') ?: get_the_title()); ?>
                 </h1>
                 <?php if (get_field('page_subtitle')) : ?>
                     <p class="mt-4 text-lg text-[var(--text-secondary)] max-w-3xl mx-auto">
-                        <?php echo get_field('page_subtitle'); ?>
+                        <?php echo wp_kses_post(get_field('page_subtitle')); ?>
                     </p>
                 <?php endif; ?>
             </div>
@@ -58,7 +58,7 @@ get_header(); ?>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         </svg>
-                                        <?php echo $event_location; ?>
+                                        <?php echo wp_kses_post($event_location); ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -134,15 +134,15 @@ get_header(); ?>
                             <?php if ($event_date) : ?>
                                 <div class="flex items-center mb-4">
                                     <div class="bg-[var(--primary-color)] text-white rounded-lg p-3 text-center min-w-[60px] mr-4">
-                                        <div class="text-lg font-bold"><?php echo $day; ?></div>
-                                        <div class="text-xs uppercase"><?php echo $month; ?></div>
+                                        <div class="text-lg font-bold"><?php echo wp_kses_post($day); ?></div>
+                                        <div class="text-xs uppercase"><?php echo wp_kses_post($month); ?></div>
                                     </div>
                                     <div>
                                         <h3 class="text-lg font-bold text-black mb-1">
                                             <?php the_title(); ?>
                                         </h3>
                                         <?php if ($event_time) : ?>
-                                            <p class="text-sm text-[var(--text-secondary)]"><?php echo $event_time; ?></p>
+                                            <p class="text-sm text-[var(--text-secondary)]"><?php echo wp_kses_post($event_time); ?></p>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -162,7 +162,7 @@ get_header(); ?>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     </svg>
-                                    <?php echo $event_location; ?>
+                                    <?php echo wp_kses_post($event_location); ?>
                                 </div>
                             <?php endif; ?>
                             

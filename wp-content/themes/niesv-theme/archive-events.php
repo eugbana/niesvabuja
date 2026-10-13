@@ -67,7 +67,7 @@ get_template_part('template-parts/hero-section', null, $hero_args);
                         $event_classes .= $is_upcoming ? ' upcoming' : ' past';
                         $event_classes .= $event_type ? ' ' . sanitize_html_class($event_type) : '';
                     ?>
-                        <article class="<?php echo $event_classes; ?> bg-white rounded-xl shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-all duration-300 <?php echo $is_featured ? 'ring-2 ring-[var(--accent-gold)]' : ''; ?>">
+                        <article class="<?php echo esc_attr($event_classes); ?> bg-white rounded-xl shadow-lg overflow-hidden group transform hover:-translate-y-2 transition-all duration-300 <?php echo $is_featured ? 'ring-2 ring-[var(--accent-gold)]' : ''; ?>">
                             
                             <?php if ($is_featured) : ?>
                                 <div class="bg-[var(--accent-gold)] text-[var(--primary-color)] text-center py-2 px-4 font-semibold text-sm">
@@ -99,7 +99,7 @@ get_template_part('template-parts/hero-section', null, $hero_args);
                                                         <circle cx="12" cy="12" r="10"></circle>
                                                         <polyline points="12,6 12,12 16,14"></polyline>
                                                     </svg>
-                                                    <?php echo $event_time; ?>
+                                                    <?php echo wp_kses_post($event_time); ?>
                                                 </p>
                                             <?php endif; ?>
                                         </div>
@@ -118,7 +118,7 @@ get_template_part('template-parts/hero-section', null, $hero_args);
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         </svg>
-                                        <?php echo $event_location; ?>
+                                        <?php echo wp_kses_post($event_location); ?>
                                     </p>
                                 <?php endif; ?>
                                 
@@ -145,7 +145,7 @@ get_template_part('template-parts/hero-section', null, $hero_args);
                                     </a>
                                     
                                     <?php if ($is_upcoming && get_field('registration_link')) : ?>
-                                        <a href="<?php echo get_field('registration_link'); ?>" 
+                                        <a href="<?php echo esc_url(get_field('registration_link')); ?>" 
                                            target="_blank" rel="noopener noreferrer"
                                            class="py-2 px-4 bg-[var(--accent-gold)] text-[var(--primary-color)] rounded-md text-sm font-semibold hover:bg-opacity-90 transition-all">
                                             Register

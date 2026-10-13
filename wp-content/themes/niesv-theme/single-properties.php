@@ -63,7 +63,7 @@ get_header(); ?>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             </svg>
-                            <?php echo $property_location; ?>
+                            <?php echo wp_kses_post($property_location); ?>
                         </p>
                     <?php endif; ?>
                 </div>
@@ -84,7 +84,7 @@ get_header(); ?>
                                 );
                                 $duration_label = isset($duration_labels[$rent_duration]) ? $duration_labels[$rent_duration] : 'per month';
                             ?>
-                            <div class="text-[#575757]"><?php echo $duration_label; ?></div>
+                            <div class="text-[#575757]"><?php echo wp_kses_post($duration_label); ?></div>
                         <?php endif; ?>
                     </div>
                 <?php endif; ?>
@@ -116,7 +116,7 @@ get_header(); ?>
                                 <div class="grid grid-cols-4 md:grid-cols-6 gap-2">
                                     <?php foreach ($property_images as $index => $image) : ?>
                                         <div class="aspect-square rounded-lg overflow-hidden cursor-pointer property-thumbnail <?php echo $index === 0 ? 'ring-2 ring-blue-500' : ''; ?>"
-                                             data-index="<?php echo $index; ?>">
+                                             data-index="<?php echo esc_attr($index); ?>">
                                             <img src="<?php echo esc_url($image['sizes']['thumbnail']); ?>"
                                                  alt="<?php echo esc_attr($image['alt']); ?>"
                                                  class="w-full h-full object-cover hover:opacity-80 transition-opacity">
@@ -147,7 +147,7 @@ get_header(); ?>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
                                             </svg>
                                         </div>
-                                        <div class="text-2xl font-bold text-[#141414]"><?php echo $property_bedrooms; ?></div>
+                                        <div class="text-2xl font-bold text-[#141414]"><?php echo wp_kses_post($property_bedrooms); ?></div>
                                         <div class="text-sm text-[#575757]">Bedroom<?php echo $property_bedrooms > 1 ? 's' : ''; ?></div>
                                     </div>
                                 <?php endif; ?>
@@ -159,7 +159,7 @@ get_header(); ?>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>
                                             </svg>
                                         </div>
-                                        <div class="text-2xl font-bold text-[#141414]"><?php echo $property_bathrooms; ?></div>
+                                        <div class="text-2xl font-bold text-[#141414]"><?php echo wp_kses_post($property_bathrooms); ?></div>
                                         <div class="text-sm text-[#575757]">Bathroom<?php echo $property_bathrooms > 1 ? 's' : ''; ?></div>
                                     </div>
                                 <?php endif; ?>
@@ -171,7 +171,7 @@ get_header(); ?>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
                                             </svg>
                                         </div>
-                                        <div class="text-lg font-bold text-[#141414]"><?php echo $property_size; ?></div>
+                                        <div class="text-lg font-bold text-[#141414]"><?php echo wp_kses_post($property_size); ?></div>
                                         <div class="text-sm text-[#575757]">Size</div>
                                     </div>
                                 <?php endif; ?>
@@ -217,7 +217,7 @@ get_header(); ?>
                                         <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
                                         </svg>
-                                        <span class="text-[#575757]"><?php echo $feature['feature_name']; ?></span>
+                                        <span class="text-[#575757]"><?php echo wp_kses_post($feature['feature_name']); ?></span>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
@@ -242,7 +242,7 @@ get_header(); ?>
                                     </div>
                                     <div>
                                         <div class="font-semibold text-[#141414]">
-                                            <?php echo $agent_name ?: 'NIESV Agent'; ?>
+                                            <?php echo wp_kses_post($agent_name ?: 'NIESV Agent'); ?>
                                         </div>
                                         <div class="text-sm text-[#575757]">Licensed Property Agent</div>
                                     </div>
@@ -257,7 +257,7 @@ get_header(); ?>
                                             </svg>
                                             <div class="flex flex-col">
                                                 <span class="text-[#141414] font-medium">Call Agent</span>
-                                                <span class="text-sm text-[#575757]"><?php echo $agent_mobile; ?></span>
+                                                <span class="text-sm text-[#575757]"><?php echo wp_kses_post($agent_mobile); ?></span>
                                             </div>
                                         </a>
                                     <?php endif; ?>
@@ -270,7 +270,7 @@ get_header(); ?>
                                             </svg>
                                             <div class="flex flex-col">
                                                 <span class="text-[#141414] font-medium">Email Agent</span>
-                                                <span class="text-sm text-[#575757]"><?php echo $agent_email; ?></span>
+                                                <span class="text-sm text-[#575757]"><?php echo wp_kses_post($agent_email); ?></span>
                                             </div>
                                         </a>
                                     <?php endif; ?>
@@ -287,7 +287,7 @@ get_header(); ?>
                                     <?php endif; ?>
 
                                     <?php if ($contact_agent_link) : ?>
-                                        <a href="<?php echo $contact_agent_link; ?>"
+                                        <a href="<?php echo esc_url($contact_agent_link); ?>"
                                            class="flex items-center justify-center w-full p-3 bg-[#00573d] text-white rounded-lg hover:bg-opacity-90 transition-all font-semibold">
                                             Contact Agent
                                         </a>
@@ -325,14 +325,14 @@ get_header(); ?>
                                 <?php if ($property_location) : ?>
                                     <div class="flex justify-between">
                                         <span class="text-[#575757]">Location:</span>
-                                        <span class="font-semibold text-[#141414]"><?php echo $property_location; ?></span>
+                                        <span class="font-semibold text-[#141414]"><?php echo wp_kses_post($property_location); ?></span>
                                     </div>
                                 <?php endif; ?>
                                 
                                 <?php if ($property_size) : ?>
                                     <div class="flex justify-between">
                                         <span class="text-[#575757]">Size:</span>
-                                        <span class="font-semibold text-[#141414]"><?php echo $property_size; ?></span>
+                                        <span class="font-semibold text-[#141414]"><?php echo wp_kses_post($property_size); ?></span>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -390,7 +390,7 @@ get_header(); ?>
                                 </h3>
                                 
                                 <?php if ($related_location) : ?>
-                                    <p class="text-[#575757] text-sm mb-3"><?php echo $related_location; ?></p>
+                                    <p class="text-[#575757] text-sm mb-3"><?php echo wp_kses_post($related_location); ?></p>
                                 <?php endif; ?>
                                 
                                 <?php if ($related_price) : ?>

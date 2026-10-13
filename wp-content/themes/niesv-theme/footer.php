@@ -12,15 +12,15 @@
                     <!-- About Section -->
                     <div>
                         <h3 class="footer-heading">
-                            <?php echo get_field('footer_about_title', 'option') ?: 'NIESV Abuja'; ?>
+                            <?php echo wp_kses_post(get_field('footer_about_title', 'option') ?: 'NIESV Abuja'); ?>
                         </h3>
                         <p class="text-gray-300">
-                            <?php echo get_field('footer_about_text', 'option') ?: 'The Nigerian Institution of Estate Surveyors and Valuers, Abuja Branch.'; ?>
+                            <?php echo wp_kses_post(get_field('footer_about_text', 'option') ?: 'The Nigerian Institution of Estate Surveyors and Valuers, Abuja Branch.'); ?>
                         </p>
                         
                         <?php if (get_field('footer_logo', 'option')) : ?>
                             <div class="mt-4">
-                                <img src="<?php echo get_field('footer_logo', 'option'); ?>" alt="NIESV Logo" class="h-12">
+                                <img src="<?php echo esc_url(get_field('footer_logo', 'option')); ?>" alt="NIESV Logo" class="h-12">
                             </div>
                         <?php endif; ?>
                     </div>
@@ -64,22 +64,22 @@
                         
                         <?php if (get_field('contact_address', 'option')) : ?>
                             <p class="text-gray-300 mb-2">
-                                <?php echo get_field('contact_address', 'option'); ?>
+                                <?php echo wp_kses_post(get_field('contact_address', 'option')); ?>
                             </p>
                         <?php endif; ?>
                         
                         <?php if (get_field('contact_email', 'option')) : ?>
                             <p class="text-gray-300 mb-2">
-                                Email: <a href="mailto:<?php echo get_field('contact_email', 'option'); ?>" class="hover:text-white transition-colors">
-                                    <?php echo get_field('contact_email', 'option'); ?>
+                                Email: <a href="mailto:<?php echo esc_attr(get_field('contact_email', 'option')); ?>" class="hover:text-white transition-colors">
+                                    <?php echo wp_kses_post(get_field('contact_email', 'option')); ?>
                                 </a>
                             </p>
                         <?php endif; ?>
                         
                         <?php if (get_field('contact_phone', 'option')) : ?>
                             <p class="text-gray-300">
-                                Phone: <a href="tel:<?php echo get_field('contact_phone', 'option'); ?>" class="hover:text-white transition-colors">
-                                    <?php echo get_field('contact_phone', 'option'); ?>
+                                Phone: <a href="tel:<?php echo esc_attr(get_field('contact_phone', 'option')); ?>" class="hover:text-white transition-colors">
+                                    <?php echo wp_kses_post(get_field('contact_phone', 'option')); ?>
                                 </a>
                             </p>
                         <?php endif; ?>
@@ -188,13 +188,13 @@
                 
                 <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
                     <p>
-                        <?php echo get_field('copyright_text', 'option') ?: '© ' . date('Y') . ' NIESV Abuja Branch. All Rights Reserved.'; ?>
+                        <?php echo wp_kses_post(get_field('copyright_text', 'option') ?: '© ' . date('Y') . ' NIESV Abuja Branch. All Rights Reserved.'); ?>
                     </p>
                     
                     <?php if (get_field('show_privacy_links', 'option')) : ?>
                         <div class="mt-2 flex justify-center gap-4 text-sm">
-                            <a href="<?php echo get_field('privacy_policy_link', 'option') ?: '#'; ?>" class="hover:text-white transition-colors">Privacy Policy</a>
-                            <a href="<?php echo get_field('terms_of_service_link', 'option') ?: '#'; ?>" class="hover:text-white transition-colors">Terms of Service</a>
+                            <a href="<?php echo esc_url(get_field('privacy_policy_link', 'option') ?: '#'); ?>" class="hover:text-white transition-colors">Privacy Policy</a>
+                            <a href="<?php echo esc_url(get_field('terms_of_service_link', 'option') ?: '#'); ?>" class="hover:text-white transition-colors">Terms of Service</a>
                         </div>
                     <?php endif; ?>
                 </div>

@@ -122,7 +122,7 @@ $events_query = new WP_Query($args);
                                             <circle cx="12" cy="12" r="10"></circle>
                                             <polyline points="12,6 12,12 16,14"></polyline>
                                         </svg>
-                                        <?php echo $event_time; ?>
+                                        <?php echo wp_kses_post($event_time); ?>
                                     </p>
                                 <?php endif; ?>
 
@@ -132,7 +132,7 @@ $events_query = new WP_Query($args);
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         </svg>
-                                        <?php echo $event_location; ?>
+                                        <?php echo wp_kses_post($event_location); ?>
                                     </p>
                                 <?php endif; ?>
                             </div>
@@ -150,7 +150,7 @@ $events_query = new WP_Query($args);
                                 </a>
 
                                 <?php if ($is_upcoming && $registration_link) : ?>
-                                    <a href="<?php echo $registration_link; ?>"
+                                    <a href="<?php echo esc_url($registration_link); ?>"
                                        target="_blank" rel="noopener noreferrer"
                                        class="text-sm px-4 py-2 bg-[rgba(0,0,40,1)] text-white rounded-md font-semibold hover:bg-opacity-90 transition-all shadow-sm">
                                         Register

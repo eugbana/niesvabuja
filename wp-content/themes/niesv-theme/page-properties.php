@@ -14,10 +14,10 @@ get_header(); ?>
         <!-- Page Header -->
         <div class="mb-8 text-center">
             <h1 class="text-4xl font-extrabold tracking-tight text-[var(--primary-color)] sm:text-5xl">
-                <?php echo get_field('properties_page_title') ?: 'Property Listings'; ?>
+                <?php echo wp_kses_post(get_field('properties_page_title') ?: 'Property Listings'); ?>
             </h1>
             <p class="mt-4 text-xl text-gray-500">
-                <?php echo get_field('properties_page_subtitle') ?: 'Discover available properties in the Abuja area.'; ?>
+                <?php echo wp_kses_post(get_field('properties_page_subtitle') ?: 'Discover available properties in the Abuja area.'); ?>
             </p>
         </div>
         
@@ -143,8 +143,8 @@ get_header(); ?>
                                 </svg>
                             </div>
                         <?php endif; ?>
-                        <div class="absolute top-2 right-2 <?php echo $status_color; ?> text-white text-sm font-semibold px-3 py-1 rounded-full">
-                            <?php echo $status_display; ?>
+                        <div class="absolute top-2 right-2 <?php echo esc_attr($status_color); ?> text-white text-sm font-semibold px-3 py-1 rounded-full">
+                            <?php echo wp_kses_post($status_display); ?>
                         </div>
                     </div>
                     <div class="p-6">
@@ -160,7 +160,7 @@ get_header(); ?>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                 </svg>
-                                <?php echo $property_location; ?>
+                                <?php echo wp_kses_post($property_location); ?>
                             </p>
                         <?php endif; ?>
                         
@@ -172,7 +172,7 @@ get_header(); ?>
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"></path>
                                         </svg>
-                                        <?php echo $property_bedrooms; ?> Beds
+                                        <?php echo wp_kses_post($property_bedrooms); ?> Beds
                                     </span>
                                 <?php endif; ?>
                                 
@@ -181,7 +181,7 @@ get_header(); ?>
                                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                             <path clip-rule="evenodd" d="M4.5 2A1.5 1.5 0 003 3.5v13A1.5 1.5 0 004.5 18h11a1.5 1.5 0 001.5-1.5V6.621a1.5 1.5 0 00-.44-1.06L13.44.439A1.5 1.5 0 0012.38 0H4.5zm8 2.5V5h-2V2.5a.5.5 0 01.5-.5h1a.5.5 0 01.5.5z" fill-rule="evenodd"></path>
                                         </svg>
-                                        <?php echo $property_bathrooms; ?> Baths
+                                        <?php echo wp_kses_post($property_bathrooms); ?> Baths
                                     </span>
                                 <?php endif; ?>
                                 
@@ -191,7 +191,7 @@ get_header(); ?>
                                             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
                                             <path clip-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" fill-rule="evenodd"></path>
                                         </svg>
-                                        <?php echo $property_size; ?>
+                                        <?php echo wp_kses_post($property_size); ?>
                                     </span>
                                 <?php endif; ?>
                             </div>

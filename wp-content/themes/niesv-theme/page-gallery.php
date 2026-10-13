@@ -58,7 +58,7 @@ get_header(); ?>
                                     <?php if ($featured_image) : ?>
                                         <img alt="<?php the_title(); ?>" 
                                              class="absolute inset-0 w-full h-full object-cover" 
-                                             src="<?php echo $featured_image; ?>"/>
+                                             src="<?php echo esc_url($featured_image); ?>"/>
                                     <?php endif; ?>
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                                 </div>
@@ -71,7 +71,7 @@ get_header(); ?>
                                             <path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
                                             <path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
                                         </svg>
-                                        <?php echo $image_count; ?> Photos
+                                        <?php echo wp_kses_post($image_count); ?> Photos
                                     </p>
                                     <?php if ($gallery_date) : ?>
                                         <p class="text-xs text-gray-400 mt-1">

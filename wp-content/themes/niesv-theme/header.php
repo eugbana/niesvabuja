@@ -123,7 +123,7 @@
                 
                 <h2 class="text-2xl font-bold tracking-tight">
                     <a href="<?php echo esc_url(home_url('/')); ?>" class="text-[var(--primary-color)] hover:text-[var(--accent-gold)] transition-colors">
-                        <?php echo get_field('site_title', 'option') ?: get_bloginfo('name'); ?>
+                        <?php echo wp_kses_post(get_field('site_title', 'option') ?: get_bloginfo('name')); ?>
                     </a>
                 </h2>
             </div>

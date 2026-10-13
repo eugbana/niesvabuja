@@ -15,11 +15,11 @@ get_header(); ?>
             <!-- Page Header -->
             <div class="text-center mb-16">
                 <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-[var(--primary-color)]">
-                    <?php echo get_field('page_title') ?: get_the_title(); ?>
+                    <?php echo wp_kses_post(get_field('page_title') ?: get_the_title()); ?>
                 </h1>
                 <?php if (get_field('page_subtitle')) : ?>
                     <p class="mt-4 text-lg text-[var(--text-secondary)] max-w-3xl mx-auto">
-                        <?php echo get_field('page_subtitle'); ?>
+                        <?php echo wp_kses_post(get_field('page_subtitle')); ?>
                     </p>
                 <?php endif; ?>
             </div>
@@ -110,7 +110,7 @@ get_header(); ?>
                         $category_classes = implode(' ', $category_slugs);
                 ?>
                     <article class="news-card bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300" 
-                             data-categories="<?php echo $category_classes; ?>">
+                             data-categories="<?php echo esc_attr($category_classes); ?>">
                         
                         <?php if (has_post_thumbnail()) : ?>
                             <img src="<?php echo get_the_post_thumbnail_url(get_the_ID(), 'medium'); ?>" 
