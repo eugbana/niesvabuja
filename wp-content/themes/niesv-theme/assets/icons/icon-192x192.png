@@ -1,0 +1,26 @@
+<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#000028;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#49739c;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" fill="url(#gradient)" rx="24"/>
+  <g transform="translate(48, 48)">
+    <rect x="0" y="60" width="96" height="36" fill="#f8fafc" rx="3"/>
+    <rect x="12" y="48" width="72" height="48" fill="#e7edf4" rx="3"/>
+    <rect x="24" y="36" width="48" height="60" fill="#ffffff" rx="3"/>
+    <rect x="30" y="45" width="9" height="9" fill="#000028"/>
+    <rect x="45" y="45" width="9" height="9" fill="#000028"/>
+    <rect x="60" y="45" width="9" height="9" fill="#000028"/>
+    <rect x="30" y="60" width="9" height="9" fill="#000028"/>
+    <rect x="45" y="60" width="9" height="9" fill="#000028"/>
+    <rect x="60" y="60" width="9" height="9" fill="#000028"/>
+    <rect x="30" y="75" width="9" height="9" fill="#000028"/>
+    <rect x="45" y="75" width="9" height="9" fill="#000028"/>
+    <rect x="60" y="75" width="9" height="9" fill="#000028"/>
+    <rect x="45" y="84" width="9" height="12" fill="#d4af37"/>
+  </g>
+  <text x="96" y="155" font-family="Arial, sans-serif" font-size="26" font-weight="bold" text-anchor="middle" fill="#ffffff">NIESV</text>
+  <text x="96" y="175" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#e7edf4">Estate Surveyors</text>
+</svg>

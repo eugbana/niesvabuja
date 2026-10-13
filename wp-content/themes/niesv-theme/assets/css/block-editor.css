@@ -1,0 +1,259 @@
+/**
+ * Block Editor Styles for NIESV Theme
+ */
+
+/* CSS Variables for consistency */
+:root {
+    --niesv-primary: rgba(0, 0, 40, 1);
+    --niesv-secondary: #e7edf4;
+    --niesv-gold: #d4af37;
+    --text-primary: #0d141c;
+    --text-secondary: #49739c;
+    --background: #f8fafc;
+}
+
+/* Editor wrapper */
+.block-editor-writing-flow {
+    font-family: 'Noto Sans', sans-serif;
+}
+
+/* Block inserter customization */
+.block-editor-inserter__panel-header {
+    background-color: var(--niesv-primary) !important;
+    color: white !important;
+}
+
+.block-editor-inserter__panel-title {
+    color: white !important;
+}
+
+/* NIESV Blocks styling in editor */
+.wp-block[data-type^="acf/"] {
+    border: 2px solid var(--niesv-gold);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    background: var(--niesv-secondary);
+    position: relative;
+}
+
+.wp-block[data-type^="acf/"]:before {
+    content: "NIESV Block";
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background: var(--niesv-gold);
+    color: var(--niesv-primary);
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+/* Specific block styling */
+.wp-block[data-type="acf/hero-section"]:before {
+    content: "Hero Section";
+}
+
+.wp-block[data-type="acf/news-cards"]:before {
+    content: "News Cards";
+}
+
+.wp-block[data-type="acf/events-cards"]:before {
+    content: "Events Cards";
+}
+
+.wp-block[data-type="acf/important-updates"]:before {
+    content: "Important Updates";
+}
+
+.wp-block[data-type="acf/team-members"]:before {
+    content: "Team Members";
+}
+
+.wp-block[data-type="acf/properties-grid"]:before {
+    content: "Properties Grid";
+}
+
+.wp-block[data-type="acf/contact-info"]:before {
+    content: "Contact Info";
+}
+
+/* Block toolbar customization */
+.block-editor-block-toolbar {
+    border-color: var(--niesv-primary);
+}
+
+.block-editor-block-toolbar .components-toolbar-group {
+    border-color: var(--niesv-primary);
+}
+
+/* Block settings panel */
+.block-editor-block-inspector {
+    background: white;
+}
+
+.block-editor-block-inspector .components-panel__header {
+    background: var(--niesv-secondary);
+    border-bottom: 1px solid var(--niesv-primary);
+}
+
+/* ACF field styling in editor */
+.acf-field {
+    margin-bottom: 20px;
+}
+
+.acf-field .acf-label {
+    color: var(--niesv-primary);
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.acf-field input[type="text"],
+.acf-field input[type="email"],
+.acf-field input[type="url"],
+.acf-field input[type="number"],
+.acf-field textarea,
+.acf-field select {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px 12px;
+    width: 100%;
+    font-family: inherit;
+}
+
+.acf-field input[type="text"]:focus,
+.acf-field input[type="email"]:focus,
+.acf-field input[type="url"]:focus,
+.acf-field input[type="number"]:focus,
+.acf-field textarea:focus,
+.acf-field select:focus {
+    border-color: var(--niesv-primary);
+    box-shadow: 0 0 0 1px var(--niesv-primary);
+    outline: none;
+}
+
+/* Button styling */
+.acf-button,
+.button,
+.wp-core-ui .button {
+    background: var(--niesv-primary);
+    border-color: var(--niesv-primary);
+    color: white;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-weight: 500;
+}
+
+.acf-button:hover,
+.button:hover,
+.wp-core-ui .button:hover {
+    background: var(--niesv-gold);
+    border-color: var(--niesv-gold);
+    color: var(--niesv-primary);
+}
+
+/* Block preview styling */
+.acf-block-preview {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    background: white;
+    margin: 10px 0;
+}
+
+/* Hide default WordPress blocks from inserter */
+.block-editor-inserter__block-list .editor-block-list-item-core-paragraph,
+.block-editor-inserter__block-list .editor-block-list-item-core-heading,
+.block-editor-inserter__block-list .editor-block-list-item-core-image,
+.block-editor-inserter__block-list .editor-block-list-item-core-gallery,
+.block-editor-inserter__block-list .editor-block-list-item-core-list,
+.block-editor-inserter__block-list .editor-block-list-item-core-quote,
+.block-editor-inserter__block-list .editor-block-list-item-core-audio,
+.block-editor-inserter__block-list .editor-block-list-item-core-cover,
+.block-editor-inserter__block-list .editor-block-list-item-core-file,
+.block-editor-inserter__block-list .editor-block-list-item-core-video,
+.block-editor-inserter__block-list .editor-block-list-item-core-code,
+.block-editor-inserter__block-list .editor-block-list-item-core-html,
+.block-editor-inserter__block-list .editor-block-list-item-core-preformatted,
+.block-editor-inserter__block-list .editor-block-list-item-core-pullquote,
+.block-editor-inserter__block-list .editor-block-list-item-core-table,
+.block-editor-inserter__block-list .editor-block-list-item-core-verse,
+.block-editor-inserter__block-list .editor-block-list-item-core-button,
+.block-editor-inserter__block-list .editor-block-list-item-core-buttons,
+.block-editor-inserter__block-list .editor-block-list-item-core-columns,
+.block-editor-inserter__block-list .editor-block-list-item-core-group,
+.block-editor-inserter__block-list .editor-block-list-item-core-more,
+.block-editor-inserter__block-list .editor-block-list-item-core-nextpage,
+.block-editor-inserter__block-list .editor-block-list-item-core-separator,
+.block-editor-inserter__block-list .editor-block-list-item-core-spacer,
+.block-editor-inserter__block-list .editor-block-list-item-core-shortcode,
+.block-editor-inserter__block-list .editor-block-list-item-core-archives,
+.block-editor-inserter__block-list .editor-block-list-item-core-categories,
+.block-editor-inserter__block-list .editor-block-list-item-core-latest-comments,
+.block-editor-inserter__block-list .editor-block-list-item-core-latest-posts,
+.block-editor-inserter__block-list .editor-block-list-item-core-calendar,
+.block-editor-inserter__block-list .editor-block-list-item-core-rss,
+.block-editor-inserter__block-list .editor-block-list-item-core-search,
+.block-editor-inserter__block-list .editor-block-list-item-core-tag-cloud,
+.block-editor-inserter__block-list .editor-block-list-item-core-embed {
+    display: none !important;
+}
+
+/* Highlight NIESV blocks in inserter */
+.block-editor-inserter__block-list .editor-block-list-item-acf {
+    border: 2px solid var(--niesv-gold) !important;
+    border-radius: 8px !important;
+    background: var(--niesv-secondary) !important;
+}
+
+.block-editor-inserter__block-list .editor-block-list-item-acf .block-editor-block-types-list__item-title {
+    color: var(--niesv-primary) !important;
+    font-weight: bold !important;
+}
+
+/* Editor title styling */
+.editor-post-title__input {
+    color: var(--niesv-primary);
+    font-family: 'Newsreader', serif;
+}
+
+/* Sidebar styling */
+.edit-post-sidebar {
+    background: white;
+}
+
+.edit-post-sidebar .components-panel__header {
+    background: var(--niesv-secondary);
+    border-bottom: 1px solid var(--niesv-primary);
+}
+
+/* Success messages */
+.components-notice.is-success {
+    background: var(--niesv-gold);
+    color: var(--niesv-primary);
+}
+
+/* Error messages */
+.components-notice.is-error {
+    background: #dc3545;
+    color: white;
+}
+
+/* Loading states */
+.components-spinner {
+    color: var(--niesv-primary);
+}
+
+/* Custom media queries for responsive editor */
+@media (max-width: 768px) {
+    .wp-block[data-type^="acf/"] {
+        padding: 15px;
+        margin: 15px 0;
+    }
+    
+    .wp-block[data-type^="acf/"]:before {
+        font-size: 11px;
+        padding: 1px 6px;
+    }
+}

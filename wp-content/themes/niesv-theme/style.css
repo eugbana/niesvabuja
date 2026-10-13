@@ -1,0 +1,1596 @@
+/*
+Theme Name: NIESV Abuja Theme
+Description: Custom WordPress theme for NIESV Abuja Branch - Nigerian Institution of Estate Surveyors and Valuers
+Author: Custom Development
+Version: 1.0.0
+Text Domain: niesv-theme
+*/
+
+:root {
+    --primary-color: rgba(0, 0, 40, 1);
+    --secondary-color: #e7edf4;
+    --text-primary: #0d141c;
+    --text-secondary: #49739c;
+    --background-color: #f8fafc;
+    --accent-gold: #d4af37;
+
+    /* Typography Variables */
+    --font-family-base: system-ui, -apple-system, "Helvetica Neue", Helvetica, Arial, Roboto, Inter, "Open Sans", sans-serif;
+    --font-family-hero: "Georgia", "Times New Roman", "Times", serif; /* Professional serif font for hero sections */
+    --font-size-base: 1rem; /* 16px */
+    --line-height-base: 1.6; /* 1.5-1.7 range */
+    --font-weight-normal: 400;
+
+    /* Heading Variables */
+    --font-size-h1: clamp(2rem, 5vw, 3rem); /* 32-48px responsive */
+    --font-size-h2: clamp(1.5rem, 4vw, 2rem); /* 24-32px responsive */
+    --font-size-h3: clamp(1.25rem, 3vw, 1.5rem); /* 20-24px responsive */
+    --font-size-h4: clamp(1.125rem, 2.5vw, 1.25rem); /* 18-20px responsive */
+
+    --line-height-h1: 1.2; /* 1.1-1.3 range */
+    --line-height-h2: 1.3; /* 1.2-1.4 range */
+    --line-height-h3: 1.4; /* 1.3-1.5 range */
+    --line-height-h4: 1.45; /* 1.4-1.5 range */
+
+    --font-weight-h1: 700; /* 600-700 range */
+    --font-weight-h2: 600;
+    --font-weight-h3: 600; /* 500-600 range */
+    --font-weight-h4: 500;
+
+    /* UI Elements */
+    --font-size-button: 0.875rem; /* 14px */
+    --font-size-button-large: 1rem; /* 16px */
+    --font-weight-button: 500; /* 500-600 range */
+    --letter-spacing-button: 0.025em; /* 0.5px at 16px */
+
+    /* Small Text */
+    --font-size-caption: 0.75rem; /* 12px */
+    --font-size-small: 0.875rem; /* 14px */
+    --font-weight-caption: 400; /* 400-500 range */
+    --font-weight-small: 400;
+}
+
+/* Base Typography */
+body {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    font-weight: var(--font-weight-normal);
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 0;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-family-base);
+    color: var(--text-primary);
+    margin: 0 0 0.5em 0;
+}
+
+h1 {
+    font-size: var(--font-size-h1);
+    line-height: var(--line-height-h1);
+    font-weight: var(--font-weight-h1);
+}
+
+h2 {
+    font-size: var(--font-size-h2);
+    line-height: var(--line-height-h2);
+    font-weight: var(--font-weight-h2);
+}
+
+h3 {
+    font-size: var(--font-size-h3);
+    line-height: var(--line-height-h3);
+    font-weight: var(--font-weight-h3);
+}
+
+h4 {
+    font-size: var(--font-size-h4);
+    line-height: var(--line-height-h4);
+    font-weight: var(--font-weight-h4);
+}
+
+h5 {
+    font-size: 1rem;
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+h6 {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+/* Paragraphs and Base Text */
+p {
+    margin: 0 0 1em 0;
+    line-height: var(--line-height-base);
+}
+
+/* Links */
+a {
+    color: var(--accent-gold);
+    text-decoration: underline;
+    transition: opacity 0.2s ease;
+}
+
+a:hover {
+    opacity: 0.8;
+}
+
+/* Lists */
+ul, ol {
+    margin: 0 0 1em 0;
+    padding-left: 1.5em;
+    line-height: var(--line-height-base);
+}
+
+li {
+    margin-bottom: 0.25em;
+}
+
+/* Small Text Elements */
+small, .small {
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-small);
+}
+
+.caption, figcaption {
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-caption);
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* Button Typography */
+button, .button, .btn, input[type="submit"], input[type="button"] {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-button);
+    font-weight: var(--font-weight-button);
+    letter-spacing: var(--letter-spacing-button);
+    line-height: 1.2;
+}
+
+.button-large, .btn-large {
+    font-size: var(--font-size-button-large);
+}
+
+/* Form Elements */
+input, textarea, select {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+}
+
+label {
+    font-size: var(--font-size-small);
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* Accessibility: Ensure minimum font sizes */
+@media screen and (max-width: 768px) {
+    :root {
+        --font-size-base: 1rem; /* Keep 16px minimum on mobile */
+        --font-size-caption: 0.75rem; /* Keep 12px minimum */
+    }
+}
+
+/* WordPress Core Styles */
+.alignleft {
+    float: left;
+    margin-right: 1rem;
+}
+
+.alignright {
+    float: right;
+    margin-left: 1rem;
+}
+
+.aligncenter {
+    display: block;
+    margin: 0 auto;
+}
+
+.wp-caption {
+    max-width: 100%;
+}
+
+/* WYSIWYG Content Styles */
+.wysiwyg-content {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+}
+
+.wysiwyg-content p {
+    margin-bottom: 1em !important;
+    line-height: var(--line-height-base) !important;
+    font-size: var(--font-size-base) !important;
+}
+
+.wysiwyg-content h1 {
+    font-size: var(--font-size-h1) !important;
+    line-height: var(--line-height-h1) !important;
+    font-weight: var(--font-weight-h1) !important;
+    margin-bottom: 0.5em !important;
+    margin-top: 1em !important;
+}
+
+.wysiwyg-content h2 {
+    font-size: var(--font-size-h2) !important;
+    line-height: var(--line-height-h2) !important;
+    font-weight: var(--font-weight-h2) !important;
+    margin-bottom: 0.5em !important;
+    margin-top: 1em !important;
+}
+
+.wysiwyg-content h3 {
+    font-size: var(--font-size-h3) !important;
+    line-height: var(--line-height-h3) !important;
+    font-weight: var(--font-weight-h3) !important;
+    margin-bottom: 0.5em !important;
+    margin-top: 1em !important;
+}
+
+.wysiwyg-content h4 {
+    font-size: var(--font-size-h4) !important;
+    line-height: var(--line-height-h4) !important;
+    font-weight: var(--font-weight-h4) !important;
+    margin-bottom: 0.5em !important;
+    margin-top: 1em !important;
+}
+
+.wysiwyg-content h5 {
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+    font-weight: 500 !important;
+    margin-bottom: 0.5em !important;
+    margin-top: 1em !important;
+}
+
+.wysiwyg-content h6 {
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    font-weight: 500 !important;
+    margin-bottom: 0.5em !important;
+    margin-top: 1em !important;
+}
+
+.wysiwyg-content strong,
+.wysiwyg-content b {
+    font-weight: 600 !important;
+}
+
+.wysiwyg-content em,
+.wysiwyg-content i {
+    font-style: italic !important;
+}
+
+.wysiwyg-content ul {
+    list-style-type: disc !important;
+    margin-left: 1.5em !important;
+    margin-bottom: 1em !important;
+    line-height: var(--line-height-base) !important;
+}
+
+.wysiwyg-content ol {
+    list-style-type: decimal !important;
+    margin-left: 1.5em !important;
+    margin-bottom: 1em !important;
+    line-height: var(--line-height-base) !important;
+}
+
+.wysiwyg-content li {
+    margin-bottom: 0.25em !important;
+    line-height: var(--line-height-base) !important;
+}
+
+.wysiwyg-content a {
+    color: var(--accent-gold) !important;
+    text-decoration: underline !important;
+}
+
+.wysiwyg-content a:hover {
+    opacity: 0.8 !important;
+}
+
+.wysiwyg-content blockquote {
+    border-left: 4px solid var(--accent-gold) !important;
+    padding-left: 1em !important;
+    margin: 1em 0 !important;
+    font-style: italic !important;
+    font-size: var(--font-size-base) !important;
+    line-height: var(--line-height-base) !important;
+}
+
+.wysiwyg-content small {
+    font-size: var(--font-size-small) !important;
+    font-weight: var(--font-weight-small) !important;
+}
+
+.wysiwyg-content .caption {
+    font-size: var(--font-size-caption) !important;
+    font-weight: var(--font-weight-caption) !important;
+    color: var(--text-secondary) !important;
+}
+
+.wp-caption-text {
+    text-align: center;
+    font-style: italic;
+    margin-top: 0.5rem;
+}
+
+/* Screen Reader Text */
+.screen-reader-text {
+    clip: rect(1px, 1px, 1px, 1px);
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+}
+
+/* Navigation Styles */
+.main-navigation {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    position: relative;
+}
+
+/* Header container should not clip dropdowns */
+.site-header {
+    overflow: visible;
+}
+
+/* Layout container should not clip dropdowns */
+.layout-container {
+    overflow: visible;
+}
+
+/* Design root container should not clip dropdowns */
+.group\/design-root {
+    overflow: visible;
+}
+
+.main-navigation a {
+    text-decoration: none;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-button);
+    transition: color 0.3s ease;
+}
+
+.main-navigation a:hover {
+    color: var(--primary-color);
+}
+
+/* Dropdown Menu Styles */
+.main-navigation .menu-item-has-children {
+    position: relative;
+}
+
+.main-navigation .sub-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 250px;
+    width: max-content;
+    max-width: 300px;
+    background: var(--primary-color) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 0.375rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.main-navigation .menu-item-has-children:hover .sub-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.main-navigation .sub-menu li {
+    display: block;
+    width: 100%;
+}
+
+.main-navigation .sub-menu a {
+    display: block;
+    padding: 0.75rem 1rem;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-normal);
+    color: white !important;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+/* Removed hover effects from dropdown menu items as requested */
+
+.main-navigation .sub-menu li:last-child a {
+    border-bottom: none;
+}
+
+/* Ensure dropdown positioning works with flex layout */
+.main-navigation .flex {
+    position: relative;
+}
+
+.main-navigation .menu-item-has-children > a {
+    display: flex;
+    align-items: center;
+}
+
+/* Fix z-index issues */
+.main-navigation .menu-item-has-children:hover {
+    z-index: 1001;
+}
+
+/* Smooth transitions for dropdown arrows */
+.main-navigation .menu-item-has-children svg {
+    transition: transform 0.2s ease;
+}
+
+.main-navigation .menu-item-has-children:hover svg {
+    transform: rotate(180deg);
+}
+
+/* Right-align dropdown for menu items near the right edge */
+.main-navigation .menu-item-has-children:nth-last-child(-n+2) .sub-menu {
+    left: auto;
+    right: 0;
+}
+
+/* Ensure dropdowns don't get cut off by viewport */
+@media (max-width: 1024px) {
+    .main-navigation .sub-menu {
+        left: auto;
+        right: 0;
+        min-width: 200px;
+    }
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-button);
+    font-weight: var(--font-weight-button);
+    letter-spacing: var(--letter-spacing-button);
+    line-height: 1.2;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background-color: rgba(0, 0, 40, 0.9);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-gold {
+    background-color: var(--accent-gold);
+    color: var(--primary-color);
+    padding: 0.875rem 2rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-button-large);
+    font-weight: 600;
+    letter-spacing: var(--letter-spacing-button);
+    line-height: 1.2;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-gold:hover {
+    background-color: rgba(212, 175, 55, 0.9);
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+/* Content Styles */
+.content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.section-title {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-h1);
+    line-height: var(--line-height-h1);
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 3rem;
+    border-bottom: 2px solid var(--accent-gold);
+    display: inline-block;
+    padding-bottom: 0.5rem;
+}
+
+/* Card Styles */
+.card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-0.5rem);
+}
+
+.card-image {
+    width: 100%;
+    height: 14rem;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+/* Card Title Styles - Make all card titles black */
+.card h3,
+.event-card h3,
+.news-card h3,
+.gallery-card h3,
+.card h3 a,
+.event-card h3 a,
+.news-card h3 a,
+.gallery-card h3 a {
+    color: #000000 !important;
+}
+
+.card h3 a:hover,
+.event-card h3 a:hover,
+.news-card h3 a:hover,
+.gallery-card h3 a:hover {
+    color: #000000 !important;
+}
+
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 3rem 0;
+}
+
+.page-numbers {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--text-primary);
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+}
+
+.page-numbers:hover {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.page-numbers.current {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.page-numbers.prev,
+.page-numbers.next {
+    padding: 0.5rem 1rem;
+}
+
+.page-numbers.dots {
+    border: none;
+    background: none;
+    cursor: default;
+}
+
+.page-numbers.dots:hover {
+    background: none;
+    color: var(--text-primary);
+    border: none;
+}
+
+/* Footer Heading Styles */
+.footer-heading {
+    color: white !important;
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+/* Footer Menu Styles */
+.footer-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-menu-parent {
+    margin-bottom: 0.5rem;
+}
+
+.footer-menu-parent > a {
+    font-weight: 500;
+    color: white;
+    display: block;
+    padding: 0.25rem 0;
+}
+
+.footer-menu-child {
+    margin-bottom: 0.25rem;
+}
+
+.footer-menu-child > a {
+    color: #d1d5db;
+    font-size: 0.875rem;
+    padding-left: 0.5rem;
+    display: block;
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem;
+}
+
+.footer-submenu {
+    margin-left: 1rem;
+    margin-top: 0.5rem;
+    list-style: none;
+    padding: 0;
+}
+
+.footer-menu a:hover {
+    color: #d1d5db;
+    transition: color 0.3s ease;
+}
+
+.footer-menu-child a:hover {
+    color: white;
+}
+
+/* Footer Collapsible Menu Styles */
+.footer-toggle {
+    cursor: pointer;
+    user-select: none;
+}
+
+.footer-arrow {
+    transition: transform 0.3s ease;
+}
+
+.footer-arrow.rotate-180 {
+    transform: rotate(180deg);
+}
+
+.footer-submenu {
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.footer-submenu.hidden {
+    max-height: 0;
+    opacity: 0;
+}
+
+.footer-submenu:not(.hidden) {
+    max-height: 500px;
+    opacity: 1;
+}
+
+.has-submenu > a {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.card-title {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-h3);
+    line-height: var(--line-height-h3);
+    margin-bottom: 0.75rem;
+}
+
+.card-text {
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+}
+
+/* Footer Styles */
+.site-footer {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 3rem 0 1rem;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section h3 {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-h4);
+    font-weight: var(--font-weight-h3);
+    line-height: var(--line-height-h4);
+    margin-bottom: 1rem;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-section a {
+    color: #d1d5db;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+    color: white;
+}
+
+.footer-bottom {
+    border-top: 1px solid #374151;
+    padding-top: 1.5rem;
+    text-align: center;
+    color: #9ca3af;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    /* Typography adjustments for mobile are handled by clamp() functions */
+    /* Additional mobile-specific adjustments can be added here if needed */
+
+    /* Hide main navigation on mobile */
+    .main-navigation {
+        display: none;
+    }
+
+    .content-wrapper {
+        padding: 0 0.5rem;
+    }
+
+    /* Mobile dropdown styles */
+    .main-navigation .sub-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        border: none;
+        border-radius: 0;
+        background: #f9fafb;
+        margin-top: 0.5rem;
+        display: none;
+    }
+
+    .main-navigation .sub-menu a {
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    /* Team section responsive */
+    .team-scroll-container .flex {
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .team-scroll-container .w-48 {
+        width: 100%;
+        max-width: 200px;
+    }
+}
+
+/* Team Section Styles */
+.team-scroll-container {
+    overflow: hidden; /* Remove any scrollbars */
+}
+
+.team-scroll-container .flex {
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* ACF Block Styles */
+.acf-block {
+    margin: 2rem 0;
+}
+
+.acf-block-preview {
+    border: 2px dashed #ccc;
+    padding: 1rem;
+    text-align: center;
+    color: #666;
+}
+
+/* Hero Section */
+.hero-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(rgba(0, 0, 40, 0.6), rgba(0, 0, 40, 0.9));
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: white;
+    padding: 0 1rem;
+}
+
+.hero-title {
+    font-family: var(--font-family-base);
+    font-size: clamp(2.5rem, 6vw, 4rem); /* Responsive 40-64px */
+    font-weight: var(--font-weight-h1);
+    line-height: var(--line-height-h1);
+    margin-bottom: 1.25rem;
+}
+
+.hero-subtitle {
+    font-family: var(--font-family-base);
+    font-size: clamp(1.125rem, 3vw, 1.5rem); /* Responsive 18-24px */
+    font-weight: var(--font-weight-normal);
+    line-height: var(--line-height-base);
+    max-width: 64rem;
+    margin: 0 auto 2.5rem;
+}
+
+/* Hero responsive styles are now handled by clamp() above */
+
+/* Additional Typography Utilities */
+.text-large {
+    font-size: var(--font-size-button-large);
+    line-height: var(--line-height-base);
+}
+
+.text-small {
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-small);
+}
+
+.text-caption {
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-caption);
+    color: var(--text-secondary);
+}
+
+.text-meta {
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-caption);
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* Ensure proper contrast for accessibility */
+.text-muted {
+    color: var(--text-secondary);
+}
+
+/* Focus styles for accessibility */
+button:focus,
+.button:focus,
+.btn:focus,
+input:focus,
+textarea:focus,
+select:focus,
+a:focus {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 2px;
+}
+
+/* Top Bar Styles */
+.top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    background-color: #1e3a8a !important;
+    color: white;
+    /* Ensure solid background */
+    backdrop-filter: blur(10px);
+    /* Remove any margin/padding that could create gaps */
+    margin: 0;
+    border-bottom: none;
+    /* Set exact height to match CSS variable */
+    height: var(--top-bar-height);
+    display: flex;
+    align-items: center;
+}
+
+.top-bar .container {
+    max-width: 1200px;
+}
+
+.top-bar a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.top-bar a:hover {
+    color: #fbbf24;
+}
+
+/* Calculate exact top bar height */
+:root {
+    --top-bar-height: 30px; /* Exact height that covers the gap */
+}
+
+/* Sticky Header Styles */
+.site-header {
+    position: fixed;
+    top: var(--top-bar-height); /* Position exactly after top bar */
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: #122251;
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Ensure header has solid background to prevent content showing through */
+    background-color: #122251 !important;
+    backdrop-filter: blur(10px);
+    /* Remove any margins that could create gaps */
+    margin: 0;
+    border-top: none;
+}
+
+/* No pseudo-element needed since heights match exactly */
+
+.site-header .custom-logo img {
+    max-height: 60px; /* Increased logo size for better visibility */
+    width: auto;
+}
+
+/* Alternative logo styling if the filter doesn't work well */
+.site-header .custom-logo {
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle white background */
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    display: inline-block;
+}
+
+/* Fallback for SVG logos */
+.site-header .custom-logo svg {
+    fill: white !important;
+    color: white !important;
+}
+
+/* If you have a dark logo, you can also add a white background */
+.site-header .custom-logo.dark-logo img {
+    background-color: white;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+}
+
+.site-header h2 a {
+    color: white !important;
+}
+
+.site-header h2 a:hover {
+    color: var(--accent-gold) !important;
+}
+
+.site-header .main-navigation a {
+    color: white !important;
+}
+
+.site-header .main-navigation a:hover {
+    color: var(--accent-gold) !important;
+}
+
+/* Adjust body padding to account for fixed header */
+body {
+    padding-top: calc(var(--top-bar-height) + 5rem); /* Top bar + Header height + buffer */
+}
+
+/* Ensure main content stays below header */
+.main-content,
+.layout-container,
+main {
+    position: relative;
+    z-index: 1;
+    background-color: var(--background-color, #f8fafc);
+}
+
+/* Ensure hero sections don't interfere with header */
+.hero-section {
+    position: relative;
+    z-index: 1;
+}
+
+/* Hero Section Professional Typography */
+.hero-title,
+.hero-slide h1 {
+    /* font-family: var(--font-family-hero) !important; */
+    font-weight: 700 !important;
+    letter-spacing: -0.02em;
+    /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); */
+    color: white !important;
+}
+
+.hero-subtitle,
+.hero-slide p {
+    /* font-family: var(--font-family-hero) !important; */
+    font-weight: 400 !important;
+    letter-spacing: 0.01em;
+    /* text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); */
+    color: white !important;
+}
+
+/* Login/Signup Button Styles */
+.header-auth-button {
+    background-color: var(--accent-gold);
+    color: var(--primary-color);
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-small);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid var(--accent-gold);
+}
+
+.header-auth-button:hover {
+    background-color: transparent;
+    color: var(--accent-gold);
+    text-decoration: none;
+}
+
+.header-auth-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* Mobile menu adjustments for sticky header */
+.mobile-menu {
+    position: fixed;
+    top: calc(var(--top-bar-height) + 4rem); /* Below the header dynamically */
+    left: 0;
+    right: 0;
+    bottom: 0; /* Extend to bottom of screen */
+    background-color: rgba(0, 0, 40, 0.95);
+    color: white;
+    z-index: 999;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    display: block; /* Ensure it's always block, hidden class will control visibility */
+    /* Enable scrolling */
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
+    /* Custom scrollbar styling */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Mobile menu hidden state */
+.mobile-menu.hidden {
+    display: none !important;
+}
+
+/* Custom scrollbar for mobile menu (webkit browsers) */
+.mobile-menu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mobile-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mobile-menu::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.mobile-menu::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Mobile menu navigation styling */
+.mobile-menu nav {
+    padding: 1rem;
+    /* Add padding at bottom to ensure last item is accessible */
+    padding-bottom: 2rem;
+    /* Minimum height to enable scrolling */
+    min-height: 100%;
+}
+
+/* Add scroll indicator shadows */
+.mobile-menu::before {
+    content: '';
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background: linear-gradient(to bottom, rgba(0, 0, 40, 0.95), transparent);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.mobile-menu::after {
+    content: '';
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background: linear-gradient(to top, rgba(0, 0, 40, 0.95), transparent);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.mobile-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mobile-menu li {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-menu li:last-child {
+    border-bottom: none;
+}
+
+.mobile-menu a {
+    display: block;
+    padding: 0.75rem 0;
+    color: white !important;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.mobile-menu a:hover {
+    color: var(--accent-gold) !important;
+}
+
+/* Mobile submenu styling */
+.mobile-menu .sub-menu {
+    padding-left: 1rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.375rem;
+    /* Smooth transition for expand/collapse */
+    transition: all 0.3s ease;
+    overflow: hidden;
+    /* Initially hidden */
+    display: none;
+}
+
+.mobile-menu .sub-menu.show {
+    display: block;
+}
+
+.mobile-menu .sub-menu a {
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    border-left: 2px solid transparent;
+    padding-left: 0.5rem;
+    transition: border-color 0.3s ease;
+}
+
+.mobile-menu .sub-menu a:hover {
+    border-left-color: var(--accent-gold);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Parent menu item with children indicator */
+.mobile-menu .menu-item-has-children > a {
+    position: relative;
+    padding-right: 2rem;
+}
+
+.mobile-menu .menu-item-has-children > a::after {
+    content: '+';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+}
+
+.mobile-menu .menu-item-has-children.expanded > a::after {
+    content: '−';
+    transform: translateY(-50%) rotate(0deg);
+}
+
+/* WYSIWYG Content Styling for Commitment Section */
+.wysiwyg-content {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.wysiwyg-content h1,
+.wysiwyg-content h2,
+.wysiwyg-content h3,
+.wysiwyg-content h4,
+.wysiwyg-content h5,
+.wysiwyg-content h6 {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+}
+
+.wysiwyg-content h1 { font-size: 2.25rem; }
+.wysiwyg-content h2 { font-size: 1.875rem; }
+.wysiwyg-content h3 { font-size: 1.5rem; }
+.wysiwyg-content h4 { font-size: 1.25rem; }
+.wysiwyg-content h5 { font-size: 1.125rem; }
+.wysiwyg-content h6 { font-size: 1rem; }
+
+.wysiwyg-content p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+}
+
+.wysiwyg-content ul,
+.wysiwyg-content ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+
+.wysiwyg-content li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.wysiwyg-content a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+.wysiwyg-content a:hover {
+    color: var(--accent-gold);
+}
+
+.wysiwyg-content strong,
+.wysiwyg-content b {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.wysiwyg-content em,
+.wysiwyg-content i {
+    font-style: italic;
+}
+
+.wysiwyg-content blockquote {
+    border-left: 4px solid var(--accent-gold);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+/* About Page Full-Width Styles */
+.about-page-full-width {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+}
+
+/* Mission, Vision, Values Section Enhancements */
+.mvv-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+}
+
+.mvv-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.mvv-card .icon-container {
+    transition: all 0.3s ease;
+}
+
+.mvv-card:hover .icon-container {
+    transform: rotate(5deg) scale(1.1);
+}
+
+/* Character count styling for ACF fields */
+.acf-field[data-name="mission_statement"] .acf-input::after,
+.acf-field[data-name="vision_statement"] .acf-input::after,
+.acf-field[data-name="core_values"] .acf-input::after {
+    content: attr(data-character-count);
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+    text-align: right;
+}
+
+/* Responsive adjustments for Mission, Vision, Values */
+@media (max-width: 768px) {
+    .mvv-card {
+        margin-bottom: 1.5rem;
+    }
+
+    .mvv-card:hover {
+        transform: translateY(-4px) scale(1.01);
+    }
+}
+
+/* Full-width section background patterns */
+.mvv-section-bg {
+    background-image:
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    background-size: 100px 100px;
+    background-position: 0 0, 50px 50px;
+}
+
+.mobile-menu a {
+    color: white !important;
+}
+
+.mobile-menu a:hover {
+    color: var(--accent-gold) !important;
+}
+
+/* Mobile menu toggle button styling */
+.mobile-menu-toggle {
+    color: white;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    z-index: 1002;
+    position: relative;
+}
+
+.mobile-menu-toggle:hover {
+    color: var(--accent-gold);
+}
+
+.mobile-menu-toggle:focus {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 2px;
+}
+
+/* Ensure mobile menu is visible when not hidden */
+.mobile-menu:not(.hidden) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Force hide desktop navigation on mobile */
+@media (max-width: 768px) {
+    .main-navigation {
+        display: none !important;
+    }
+
+    .mobile-menu-toggle {
+        display: block !important;
+    }
+
+    /* Override Tailwind's md:hidden class for mobile menu */
+    .mobile-menu {
+        display: block !important;
+    }
+
+    .mobile-menu.hidden {
+        display: none !important;
+    }
+}
+
+/* CSS-only fallback for mobile menu (if JavaScript fails) */
+.mobile-menu-toggle:focus + .mobile-menu,
+.mobile-menu:hover {
+    display: block !important;
+}
+
+/* Override Tailwind CSS conflicts for mobile menu */
+#mobile-menu.mobile-menu {
+    display: block !important;
+}
+
+#mobile-menu.mobile-menu.hidden {
+    display: none !important;
+}
+
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    body {
+        padding-top: 110px; /* Top bar (35px) + Header (75px) on mobile */
+    }
+
+    .top-bar {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+    }
+
+    .top-bar .container {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    /* Hide contact info on very small screens */
+    @media (max-width: 480px) {
+        .top-bar .flex:first-child {
+            display: none;
+        }
+
+        .top-bar .container {
+            justify-content: center;
+        }
+    }
+
+    /* Update top bar height for mobile */
+    :root {
+        --top-bar-height: 28px; /* Slightly smaller on mobile */
+    }
+
+    .site-header {
+        top: var(--top-bar-height); /* Use consistent positioning */
+        padding: 0.75rem 1rem; /* Smaller padding on mobile */
+    }
+
+    .site-header h2 {
+        font-size: 1.25rem; /* Smaller title on mobile */
+    }
+
+    .header-auth-buttons {
+        display: none; /* Hide auth buttons on mobile, show in mobile menu instead */
+    }
+
+    .mobile-menu {
+        top: calc(var(--top-bar-height) + 3.5rem); /* Adjust for mobile header dynamically */
+        display: block !important; /* Force display on mobile */
+        /* Ensure mobile menu takes remaining screen height */
+        max-height: calc(100vh - var(--top-bar-height) - 3.5rem);
+        /* Better touch scrolling on iOS */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .mobile-menu.hidden {
+        display: none !important; /* Only hide when has hidden class */
+    }
+
+    /* Ensure mobile menu button is visible and properly styled */
+    .mobile-menu-toggle {
+        display: block !important;
+        z-index: 1001;
+    }
+
+    /* Hide desktop navigation completely on mobile */
+    .site-header .main-navigation {
+        display: none !important;
+    }
+
+    /* PWA toggle positioning on mobile */
+    #pwa-caching-toggle {
+        right: 1rem !important;
+    }
+
+    #pwa-caching-menu {
+        right: 3rem !important;
+        width: 16rem !important;
+    }
+}
+
+/* PWA Caching Toggle Styles */
+#pwa-caching-toggle {
+    z-index: 1050 !important;
+}
+
+#pwa-caching-btn {
+    background-color: rgba(31, 41, 55, 0.9) !important;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+#pwa-caching-btn:hover {
+    background-color: rgba(55, 65, 81, 0.95) !important;
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+#pwa-caching-menu {
+    z-index: 1051 !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Print styles */
+@media print {
+    body {
+        font-size: 12pt;
+        line-height: 1.4;
+        color: #000;
+        background: #fff;
+        padding-top: 0;
+    }
+
+    .site-header {
+        display: none;
+    }
+
+    h1 { font-size: 18pt; }
+    h2 { font-size: 16pt; }
+    h3 { font-size: 14pt; }
+    h4 { font-size: 12pt; }
+    h5, h6 { font-size: 11pt; }
+}

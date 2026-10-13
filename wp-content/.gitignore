@@ -1,0 +1,12 @@
+# Local metadata and generated runtime files
+.DS_Store
+.idea/
+*.log
+/.litespeed_conf.dat
+/litespeed/
+/cache/
+/ai1wm-backups/
+/upgrade/
+/upgrade-temp-backup/
+/uploads/
+/plugins/
